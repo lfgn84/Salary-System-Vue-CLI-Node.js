@@ -8,10 +8,11 @@ let usersdb = new sqlite3.Database(DBSOURCE, (err) => {
         // Cannot open database
         console.error(err.message)
         throw err
-    }else{
+    } else {
         console.log('Connected to the "users" SQlite database.')
         usersdb.run(`CREATE TABLE users (
             usersId INTEGER PRIMARY KEY,
+            usersRange TEXT,
             usersName TEXT,
             usersLastName TEXT,
             usersPN TEXT,
@@ -35,12 +36,14 @@ let usersdb = new sqlite3.Database(DBSOURCE, (err) => {
             usersLaptop REAL,
             usersMiscHardware REAL,
             usersMisc REAL
-            )`,(err) => {
+            )`, (err) => {
             if (err) {
                 // Table already created
-            }else{
+            } else {
                 // Table just created, creating some rows
                 var insert = `INSERT INTO users (
+                usersId,
+                usersRange,
                 usersName,
                 usersLastName,
                 usersPN,
@@ -63,8 +66,10 @@ let usersdb = new sqlite3.Database(DBSOURCE, (err) => {
                 usersMobile,
                 usersLaptop,
                 usersMiscHardware,
-                usersMisc) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
-                usersdb.run(insert, ["Luis","Gutierrez","841026","lfgn84@gmail.com","0703487596","26/03/2020","PSS","Prodeff","Prodeff",500,0.65,20000,0.33,0.12,0,0,0.33,0,0,0,0,0,0])
+                usersMisc) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+                usersdb.run(insert, [0, "user", "Luis", "Gutierrez", "841026", "lfgn84@gmail.com", "0703487596", "26/03/2020", "PSS", "Prodeff", "Prodeff", 500, 0.65, 20000, 0.33, 0.12, 0, 0, 0.33, 0, 0, 0, 0, 0, 0])
+                usersdb.run(insert, [1, "owner", "Allen", "Kalasho", "921026", "allen@prodeff.com", "078976662", "12/08/2015", "PSS", "Volvo Cars", "Stena Lines", 500, 0.80, 60000, 0.33, 0.12, 0, 0, 0.33, 0, 0, 0, 0, 0, 0])
+
             }
         })
     }

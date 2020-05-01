@@ -1,13 +1,157 @@
 <template>
-    
+    <div class="login">
+
+        <h2>PSS ACCESS</h2>
+
+        <label class="first">Login with E-mail and password</label>
+
+        <label class="labelmail">E-Mail</label><input class="mail" v-model="inputMail">
+        <label class="labelpass">Password</label><input class="password" v-model="inputPass" type="password">
+        <button class="logbutton" v-on:click="checkLog" v-show="!success">LOG IN</button>
+        <button class="accessbutton" v-show="success" v-on:click="accessSuccess"> IN TO PSS</button>
+    </div>
 </template>
 
 <script>
     export default {
-        name: "login"
+        name: "login",
+        data: function () {
+            return {
+                inputMail: "",
+                inputPass: "",
+                passwords: [],
+                success: false
+            }
+        },
+        mounted() {
+            fetch('http://127.0.0.1:3000/api/passwords/')
+                .then((response) => {
+                    return response.json();
+                })
+                .then((data) => {
+                    console.log(data.passwords);
+                    this.passwords = data.passwords;
+                });
+        },
+        methods: {
+            checkLog: function () {
+                for (let i = 0; i < this.passwords.length; i++)
+                    if (this.inputMail == this.passwords[i].passwordsMail && this.inputPass == this.passwords[i].passwordsPass) {
+                        return this.success = true
+                    }
+
+            },
+            accessSuccess: function () {
+                this.$emit('access-granted', this.inputMail)
+            }
+        }
+
     }
 </script>
 
 <style scoped>
+
+    @import url('https://fonts.googleapis.com/css2?family=Fjalla+One&family=Fredoka+One&display=swap');
+
+    .login {
+        display: grid;
+
+        grid-template-columns: 33% 33% 33%;
+        grid-auto-rows: 100px;
+
+        /*
+                background-color: aqua;
+        */
+
+    }
+
+    h2 {
+        font-family: 'Fredoka One', Tahoma;
+        font-size: 50px;
+        grid-column: 1/4;
+        grid-row: 1/3;
+        text-align: center;
+        color: white;
+        background-color: green;
+        border-radius: 25px;
+
+
+    }
+
+    .first {
+        padding-top: 20px;
+        padding-left: 15px;
+        font-size: 23px;
+        color: white;
+        text-align: left;
+        grid-column: 2/4;
+        grid-row: 2/3;
+
+
+    }
+
+    label {
+        /* background-color: #2c3e50;*/
+        font-size: 28px;
+
+        font-family: 'Fjalla One', Tahoma;
+        text-align: center;
+
+
+    }
+
+    .labelmail {
+        grid-column: 1/1;
+        grid-row: 3/3;
+    }
+
+    .mail {
+
+        grid-column: 2/3;
+        grid-row: 3/3;
+        height: 30px;
+        font-family: 'Fjalla One', Tahoma;
+        font-size: 20px;
+    }
+
+    .labelpass {
+
+        grid-column: 1/1;
+        grid-row: 4/4;
+    }
+
+    .password {
+        grid-column: 2/3;
+        grid-row: 4/4;
+        height: 30px;
+        font-family: 'Fjalla One', Tahoma;
+        font-size: 20px;
+
+    }
+
+    .logbutton {
+        grid-column: 2/2;
+        background-color: darkblue;
+        max-width: 90px;
+        max-height: 80%;
+        grid-row: 5/5;
+        color: white;
+        border-radius: 25px;
+        child-align: middle;
+
+    }
+
+    .accessbutton {
+        grid-row: 5/5;
+        grid-column: 2/3;
+        max-width: 90px;
+        max-height: 80%;
+        background-color: forestgreen;
+        color: white;
+        border-radius: 25px;
+
+
+    }
+
 
 </style>

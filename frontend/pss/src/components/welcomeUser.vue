@@ -1,13 +1,14 @@
 <template>
-        <img alt="Vue logo" src="./assets/logo.png">
-        <h1>{{helloMessage}}</h1>
+    <img alt="Vue logo" src="./assets/logo.png">
+    <h1>{{helloMessage}}</h1>
 
-        <users></users>
+    <users></users>
 </template>
 
 <script>
     // import HelloWorld from './components/HelloWorld.vue'
     import users from "./components/users";
+
     export default {
         name: 'welcomeUser',
         components: {
@@ -15,8 +16,8 @@
             users
         },
         data: function () {
-            return{
-                helloMessage:"Consultant Information"
+            return {
+                helloMessage: "Consultant Information"
             }
 
         }
@@ -25,6 +26,7 @@
 
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Mukta:wght@200&family=Spartan:wght@500&display=swap');
+
     #app {
         font-family: 'Spartan', sans-serif;
         -webkit-font-smoothing: antialiased;
