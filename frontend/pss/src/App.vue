@@ -9,6 +9,7 @@
 
 <script>
     //import slides from './components/slides.vue';
+
     import users from "./components/users";
     import login from "./components/login";
 
@@ -55,7 +56,8 @@
     }
 
     .users {
-        grid-column: 2/5;
+        /*background-color: cadetblue;*/
+        grid-column: 2/6;
         grid-row: 3/8;
     }
 </style>

@@ -3,6 +3,7 @@ var app = express()
 var cors = require('cors')
 var usersdb = require("./usersdb.js")
 var passwordsdb = require("./passwordsdb.js")
+var salarydb = require("./salarydb.js")
 
 app.use(cors())
 app.use(express.static('public'))
@@ -286,7 +287,60 @@ app.delete("/api/users/:id", (req, res, next) => {
             res.json({"message": "deleted", rows: this.changes})
         });
 })
+app.get("/api/salary", (req, res, next) => {
+    var sql = "select * from salary"
+    var params = []
+    salarydb.all(sql, params, (err, rows) => {
+        if (err) {
+            res.status(400).json({"error": err.message});
+            return;
+        }
+        res.json({
+            "message": "success",
+            "salary": rows
+        })
+    });
+});
+app.post("/api/salary", (req, res, next) => {
+    var errors = []
+    if (!req.body.salaryUserId || !req.body.salaryDate) {
+        errors.push("No valid object");
+    }
+    var data = {
+        salaryUserId: req.body.salaryUserId,
+        salaryDate: req.body.salaryDate,
+        salaryProject: req.body.salaryProject,
+        salaryHourFare: req.body.salaryHourFare,
+        salaryWorkedHours: req.body.salaryWorkedHours,
+        salaryIncome: req.body.salaryIncome
+    };
+    var sql = `INSERT INTO salary (
+                salaryUserId,
+                salaryDate,
+                salaryProject,
+                salaryHourFare,
+                salaryWorkedHours,
+                SalaryIncome
+                ) VALUES (?,?,?,?,?,?)`
+    var params = [data.salaryUserId,
+                  data.salaryDate,
+                  data.salaryProject,
+                  data.salaryHourFare,
+                  data.salaryWorkedHours,
+                  data.salaryIncome]
+    salarydb.run(sql, params, function (err, result) {
+        if (err) {
+            res.status(400).json({"error": err.message})
+            return;
+        }
+        res.json({
+            "message": "success",
+            "salary": data,
+            "id": this.lastID
+        })
 
+    })
+});
 // Root path
 app.get("/", (req, res, next) => {
     res.json({"message": "Ok"})

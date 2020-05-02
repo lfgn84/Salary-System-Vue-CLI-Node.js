@@ -3,22 +3,31 @@
         <h2>Consultant</h2>
 
         <!--            <li v-for="users in users" v-bind:key="users.usersId">{{ users.usersName }} {{ users.usersPN }}</li>-->
-
+        <div id="user">
         <ul>
-            <li>PSS user range : {{user.usersRange}}</li>
-            <li>name: {{user.usersName}} {{user.usersLastName}}</li>
-            <li>personal number: {{user.usersPN}}</li>
-            <li>e-mail: {{user.usersEmail}}</li>
-            <li>PSS id: {{user.usersId}}</li>
+            <li><p1>PSS user range: </p1><p2>{{user.usersRange}}</p2></li>
+            <li><p1>name: </p1><p2>{{user.usersName}} {{user.usersLastName}}</p2></li>
+            <li><p1>personal number: </p1><p2>{{user.usersPN}}</p2></li>
+            <li><p1>e-mail: </p1><p2>{{user.usersEmail}}</p2></li>
+            <li><p1>PSS id: </p1><p2>{{user.usersId}}</p2></li>
         </ul>
-
-
+        </div>
+        <div id="salary">
+        <salary :user="user"></salary>
+        </div>
     </div>
 </template>
 
 <script>
+
+    import salary from "./salary";
+
+
     export default {
         name: "users",
+        components: {
+            salary
+        },
         props: {
             email: String
 
@@ -46,6 +55,7 @@
                     if (this.users[i].usersEmail == this.email) {
                         console.log("Object id " + i);
                         this.user = this.users[i];
+
                         break;
                     }
                 }
@@ -63,6 +73,11 @@
         grid-template-columns: repeat(4, 25%);
         grid-auto-rows: 100px;
     }
+    #user{
+        grid-column: 1/2;
+        grid-row: 3/5;
+
+    }
 
     h2 {
         text-align: center;
@@ -72,12 +87,16 @@
     }
 
     ul {
-        grid-row: 3/5;
-    }
 
+    }
     li {
         font-family: "Raleway", Tahoma;
         font-size: 20px;
         text-align: left;
+    }
+    #salary{
+        grid-column: 3/6;
+        grid-row: 2;
+
     }
 </style>

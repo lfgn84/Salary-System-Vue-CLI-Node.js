@@ -7,8 +7,8 @@
 
         <label class="labelmail">E-Mail</label><input class="mail" v-model="inputMail">
         <label class="labelpass">Password</label><input class="password" v-model="inputPass" type="password">
-        <button class="logbutton" v-on:click="checkLog" v-show="!success">LOG IN</button>
-        <button class="accessbutton" v-show="success" v-on:click="accessSuccess"> IN TO PSS</button>
+        <button class="logbutton" v-on:click="checkLog" v-on:keyup.enter="checkLog" v-show="!success">LOG IN</button>
+        <button class="accessbutton" v-show="success" v-on:click="accessSuccess" v-on:keyup.enter="accessSuccess"> IN TO PSS</button>
     </div>
 </template>
 
@@ -51,7 +51,7 @@
 
 <style scoped>
 
-    @import url('https://fonts.googleapis.com/css2?family=Fjalla+One&family=Fredoka+One&display=swap');
+    @import url('https://fonts.googleapis.com/css?family=Comfortaa|Fjalla+One&display=swap');
 
     .login {
         display: grid;
@@ -66,7 +66,8 @@
     }
 
     h2 {
-        font-family: 'Fredoka One', Tahoma;
+        padding-top: 16px;
+        font-family: 'Comfortaa', Tahoma;
         font-size: 50px;
         grid-column: 1/4;
         grid-row: 1/3;
@@ -137,6 +138,8 @@
         grid-row: 5/5;
         color: white;
         border-radius: 25px;
+        font-family: 'Comfortaa', Tahoma;
+        font-size: 20px;
         child-align: middle;
 
     }
@@ -147,6 +150,8 @@
         max-width: 90px;
         max-height: 80%;
         background-color: forestgreen;
+        font-family: 'Comfortaa', Tahoma;
+        font-size: 20px;
         color: white;
         border-radius: 25px;
 
