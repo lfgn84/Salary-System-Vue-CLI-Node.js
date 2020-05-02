@@ -52,7 +52,7 @@
 <style scoped>
 
     @import url('https://fonts.googleapis.com/css?family=Comfortaa|Fjalla+One&display=swap');
-
+    @media screen and (min-width: 1025px){
     .login {
         display: grid;
 
@@ -90,6 +90,7 @@
 
 
     }
+
 
     label {
         /* background-color: #2c3e50;*/
@@ -157,6 +158,222 @@
 
 
     }
+}
+    @media  screen and (min-width: 768px) and (max-width: 1024px){
+        .login {
+            display: grid;
 
+            grid-template-columns: 33% 33% 33%;
+            grid-auto-rows: 100px;
+
+            /*
+                    background-color: aqua;
+            */
+
+        }
+
+        h2 {
+            padding-top: 16px;
+            font-family: 'Comfortaa', Tahoma;
+            font-size: 50px;
+            grid-column: 1/4;
+            grid-row: 1/3;
+            text-align: center;
+            color: white;
+            background-color: green;
+            border-radius: 25px;
+
+
+        }
+
+        .first {
+            padding-top: 20px;
+            padding-left: 15px;
+            font-size: 23px;
+            color: white;
+            text-align: center;
+            grid-column: 1/4;
+            grid-row: 2/3;
+
+
+        }
+
+
+        label {
+            /* background-color: #2c3e50;*/
+            font-size: 28px;
+
+            font-family: 'Fjalla One', Tahoma;
+            text-align: center;
+
+
+        }
+
+        .labelmail {
+            grid-column: 1/1;
+            grid-row: 3/3;
+        }
+
+        .mail {
+
+            grid-column: 2/3;
+            grid-row: 3/3;
+            height: 30px;
+            font-family: 'Fjalla One', Tahoma;
+            font-size: 20px;
+        }
+
+        .labelpass {
+
+            grid-column: 1/1;
+            grid-row: 4/4;
+        }
+
+        .password {
+            grid-column: 2/3;
+            grid-row: 4/4;
+            height: 30px;
+            font-family: 'Fjalla One', Tahoma;
+            font-size: 20px;
+
+        }
+
+        .logbutton {
+            grid-column: 2/2;
+            background-color: darkblue;
+            max-width: 90px;
+            max-height: 80%;
+            grid-row: 5/5;
+            color: white;
+            border-radius: 25px;
+            font-family: 'Comfortaa', Tahoma;
+            font-size: 20px;
+            child-align: middle;
+
+        }
+
+        .accessbutton {
+            grid-row: 5/5;
+            grid-column: 2/3;
+            max-width: 90px;
+            max-height: 80%;
+            background-color: forestgreen;
+            font-family: 'Comfortaa', Tahoma;
+            font-size: 20px;
+            color: white;
+            border-radius: 25px;
+
+
+        }
+}
+    @media  screen and (min-width: 365px) and (max-width: 767px){
+        .login {
+            display: grid;
+
+            grid-template-columns: 33% 33% 33%;
+            grid-auto-rows: 100px;
+
+            /*
+                    background-color: aqua;
+            */
+
+        }
+
+        h2 {
+            max-height: 100px;
+            padding-top: 18px;
+            font-family: 'Comfortaa', Tahoma;
+            font-size: 50px;
+            grid-column: 1/4;
+            grid-row: 1/3;
+            text-align: center;
+            color: white;
+            background-color: green;
+            border-radius: 25px;
+
+
+        }
+
+        .first {
+            padding-top: 20px;
+            padding-right: 20px;
+            font-size: 17px;
+            color: white;
+            padding-left: 23px;
+            text-align: center;
+            grid-column: 1/4;
+            grid-row: 2/3;
+
+
+        }
+
+
+        label {
+            /* background-color: #2c3e50;*/
+            font-size: 28px;
+
+            font-family: 'Fjalla One', Tahoma;
+            text-align: center;
+
+
+        }
+
+        .labelmail {
+            grid-column: 1/1;
+            grid-row: 3/3;
+        }
+
+        .mail {
+
+            grid-column: 2/3;
+            grid-row: 3/3;
+            height: 30px;
+            font-family: 'Fjalla One', Tahoma;
+            font-size: 20px;
+        }
+
+        .labelpass {
+
+            grid-column: 1/1;
+            grid-row: 4/4;
+        }
+
+        .password {
+            grid-column: 2/3;
+            grid-row: 4/4;
+            height: 30px;
+            font-family: 'Fjalla One', Tahoma;
+            font-size: 20px;
+
+        }
+
+        .logbutton {
+            grid-column: 2/2;
+            background-color: darkblue;
+            max-width: 90px;
+            max-height: 80%;
+            grid-row: 5/5;
+            color: white;
+            border-radius: 25px;
+            font-family: 'Comfortaa', Tahoma;
+            font-size: 20px;
+            child-align: middle;
+
+        }
+
+        .accessbutton {
+            grid-row: 5/5;
+            grid-column: 2/3;
+            max-width: 90px;
+            max-height: 80%;
+            background-color: forestgreen;
+            font-family: 'Comfortaa', Tahoma;
+            font-size: 20px;
+            color: white;
+            border-radius: 25px;
+
+
+        }
+    }
 
 </style>

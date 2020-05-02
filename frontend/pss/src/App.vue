@@ -40,7 +40,7 @@
 
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Mukta:wght@200&family=Spartan:wght@500&display=swap');
-
+    @media screen and (min-width: 1025px){
     #app {
         background-image: url("./assets/logo.png");
         background-position: top center;
@@ -60,4 +60,48 @@
         grid-column: 2/6;
         grid-row: 3/8;
     }
+} @media  screen and (min-width: 768px) and (max-width: 1024px){
+        #app {
+            background-image: url("./assets/logo.png");
+            background-position: top center;
+            background-size: 100%;
+            background-repeat: no-repeat;
+            display: grid;
+            grid-template-columns: repeat(5, 20%);
+            grid-auto-rows: 100px;
+        }
+
+        .login {
+            grid-column: 2/5;
+            grid-row: 3/8;
+        }
+
+        .users {
+            /*background-color: cadetblue;*/
+            grid-column: 2/6;
+            grid-row: 3/8;
+        }
+}
+@media  screen and (min-width: 365px) and (max-width: 767px){
+    #app {
+        background-image: url("./assets/logo.png");
+        background-size:90% ;
+        background-position: top center;
+        background-repeat: no-repeat;
+        display: grid;
+        grid-template-columns: repeat(2, 50%);
+        grid-auto-rows: 100px;
+    }
+
+    .login {
+        grid-column: 1/3;
+        grid-row: 2/7;
+    }
+
+    .users {
+        /*background-color: cadetblue;*/
+        grid-column: 1/2;
+        grid-row: 3/12;
+    }
+}
 </style>

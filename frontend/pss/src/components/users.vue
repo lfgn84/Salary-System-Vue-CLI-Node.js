@@ -67,6 +67,9 @@
 <style scoped>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@500&family=Raleway&display=swap');
 
+
+
+    @media screen and (min-width: 1025px){
     .consultant {
         text-align: center;
         display: grid;
@@ -99,4 +102,76 @@
         grid-row: 2;
 
     }
+}
+@media  screen and (min-width: 768px) and (max-width: 1024px){
+
+    .consultant {
+        text-align: center;
+        display: grid;
+        grid-template-columns: repeat(4, 25%);
+        grid-auto-rows: 100px;
+    }
+    #user{
+        grid-column: 1/2;
+        grid-row: 3/5;
+
+    }
+
+    h2 {
+        text-align: center;
+        grid-row: 2/3;
+        font-family: 'Montserrat Alternates', Arial;
+        font-size: 30px;
+    }
+
+    ul {
+
+    }
+    li {
+        font-family: "Raleway", Tahoma;
+        font-size: 20px;
+        text-align: left;
+    }
+    #salary{
+        grid-column: 3/6;
+        grid-row: 2;
+
+    }
+}
+@media  screen and (min-width: 365px) and (max-width: 767px){
+
+    .consultant {
+        text-align: center;
+        display: grid;
+        grid-auto-rows: 100px;
+    }
+    #user{
+        grid-row: 2/4;
+
+    }
+
+    h2 {
+        padding-left: 100px;
+        text-align: right;
+        grid-row: 1/1;
+        font-family: 'Montserrat Alternates', Arial;
+        font-size: 30px;
+    }
+
+    ul {
+
+    }
+    li {
+        font-family: "Raleway", Tahoma;
+        font-size: 20px;
+        text-align: center;
+    }
+    #salary{
+        grid-row: 4;
+        text-align: center;
+
+    }
+}
+
+
 </style>
