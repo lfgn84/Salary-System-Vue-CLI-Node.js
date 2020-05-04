@@ -11,6 +11,7 @@
             <li><p1>e-mail: </p1><p2>{{user.usersEmail}}</p2></li>
             <li><p1>PSS id: </p1><p2>{{user.usersId}}</p2></li>
         </ul>
+            <button @click="logOut">LOG OUT</button>
         </div>
         <div id="salary">
         <salary :user="user"></salary>
@@ -60,6 +61,11 @@
                     }
                 }
             }
+        },
+        methods:{
+            logOut: function(){
+                location.reload()
+            }
         }
     }
 </script>
@@ -81,14 +87,12 @@
         grid-row: 3/5;
 
     }
-
     h2 {
         text-align: center;
         grid-row: 2/3;
         font-family: 'Montserrat Alternates', Arial;
         font-size: 30px;
     }
-
     ul {
 
     }

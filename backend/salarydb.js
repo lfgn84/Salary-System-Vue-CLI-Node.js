@@ -31,7 +31,7 @@ let salarydb = new sqlite3.Database(DBSOURCE, (err) => {
                 salaryWorkedHours,
                 SalaryIncome
                 ) VALUES (?,?,?,?,?,?)`
-                salarydb.run(insert, [0, "2020-04-02","PSS", 478, 8, 3824])
+                salarydb.run(insert, [0, "2020-03-26","PSS", 478, 8, 3824])
             }
         })
     }

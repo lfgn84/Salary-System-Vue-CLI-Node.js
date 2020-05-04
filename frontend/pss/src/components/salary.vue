@@ -7,9 +7,16 @@
             <li><input type="number" min="0" v-model="workedHours"> : WORKED HOURS</li>
             <li><span>{{daySalary}}</span><span> DAY INCOME</span></li>
             <button @click="calcDay">SUBMIT DAY</button>
-            <li><div>{{workedDays}}</div></li>
+            <li>
+                {{workedDays}}
+            </li>
+                SELECT SALARY PERIOD:
             <li><input type="date" v-model="startDate"> {{startDate}}</li>
             <li><input type="date" v-model="endDate"> {{endDate}}</li>
+            <button @click="getPeriod">GET PERIOD</button>
+            <ul>
+                <li>{{selectedDays}}</li>
+            </ul>
         </ul>
     </div>
 </template>
@@ -19,7 +26,7 @@
     export default {
         name: "salary",
         props:{
-            user: Array
+            user: [Object , Array]
         },
         data(){
             return{
@@ -29,7 +36,8 @@
                 projectCode:"",
                 priceHour:"",
                 workedHours:"",
-                workedDays:[]
+                workedDays:[],
+                selectedDays:[],
             }
         },
         computed:{
@@ -72,7 +80,26 @@
                 this.projectCode = "";
                 this.priceHour = "";
                 this.workedHours = "";
+            },
+            getPeriod: function(){
+                console.log("getPeriod called")
+                var url = new URL('http://127.0.0.1:3000/api/salary/period')
+                var params = {
+                            id: this.user.usersId,
+                            startDay: this.startDate,
+                            endDay: this.endDate
+                }
+                url.search = new URLSearchParams(params).toString()
 
+                fetch(url)
+                    .then((response) => {
+                        return response.json();
+                    })
+                    .then((data) => {
+                        console.log(data.salary);
+                        this.selectedDays = data.salary;
+
+                    })
             }
         }
     }

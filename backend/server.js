@@ -286,7 +286,7 @@ app.delete("/api/users/:id", (req, res, next) => {
             }
             res.json({"message": "deleted", rows: this.changes})
         });
-})
+});
 app.get("/api/salary", (req, res, next) => {
     var sql = "select * from salary"
     var params = []
@@ -297,6 +297,20 @@ app.get("/api/salary", (req, res, next) => {
         }
         res.json({
             "message": "success",
+            "salary": rows
+        })
+    });
+});
+app.get("/api/salary/period",(req, res, next) => {
+    var params = [req.query.startDay, req.query.endDay, req.query.id]
+    var sql = "select * from salary where (salaryDate between ? and ? ) and salaryUserId = ?"
+    salarydb.all(sql,params, (err, rows) =>{
+        if (err){
+            res.status(400).jason({"err": err.message});
+            return;
+        }
+        res.json({
+            "message":"success",
             "salary": rows
         })
     });
