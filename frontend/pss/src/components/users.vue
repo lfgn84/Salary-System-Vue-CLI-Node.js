@@ -5,11 +5,11 @@
         <!--            <li v-for="users in users" v-bind:key="users.usersId">{{ users.usersName }} {{ users.usersPN }}</li>-->
         <div id="user">
         <ul>
-            <li><p1>PSS user range: </p1><p2>{{user.usersRange}}</p2></li>
-            <li><p1>name: </p1><p2>{{user.usersName}} {{user.usersLastName}}</p2></li>
-            <li><p1>personal number: </p1><p2>{{user.usersPN}}</p2></li>
-            <li><p1>e-mail: </p1><p2>{{user.usersEmail}}</p2></li>
-            <li><p1>PSS id: </p1><p2>{{user.usersId}}</p2></li>
+            <li><p1>PSS user range: </p1><p2>{{user[0].usersRange}}</p2></li>
+            <li><p1>name: </p1><p2>{{user[0].usersName}} {{user.usersLastName}}</p2></li>
+            <li><p1>personal number: </p1><p2>{{user[0].usersPN}}</p2></li>
+            <li><p1>e-mail: </p1><p2>{{user[0].usersEmail}}</p2></li>
+            <li><p1>PSS id: </p1><p2>{{user[0].usersId}}</p2></li>
         </ul>
             <button @click="logOut">LOG OUT</button>
         </div>
@@ -35,33 +35,36 @@
         },
         data: function () {
             return {
-                users: [],
                 user: []
 
             }
         },
-        mounted() {
-            fetch('http://127.0.0.1:3000/api/users/')
+        created() {
+            var url = new URL('http://127.0.0.1:3000/api/users/user');
+            var params = {
+                mail: this.email
+            };
+            url.search = new URLSearchParams(params).toString();
+            fetch(url)
                 .then((response) => {
                     return response.json();
                 })
                 .then((data) => {
                     console.log(data.users);
-                    this.users = data.users;
-                })
+                    this.user = data.users;
+                });
         },
-        watch: {
+/*        watch: {
             email: function () {
                 for (var i = 0; i <= this.users.length; i++) {
                     if (this.users[i].usersEmail == this.email) {
                         console.log("Object id " + i);
                         this.user = this.users[i];
-
                         break;
                     }
                 }
             }
-        },
+        },*/
         methods:{
             logOut: function(){
                 location.reload()
@@ -102,7 +105,7 @@
         text-align: left;
     }
     #salary{
-        grid-column: 3/6;
+        grid-column: 2/6;
         grid-row: 2;
 
     }

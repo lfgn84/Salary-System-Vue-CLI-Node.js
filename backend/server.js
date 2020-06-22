@@ -19,8 +19,8 @@ app.listen(HTTP_PORT, () => {
     console.log("Server running on port %PORT%".replace("%PORT%", HTTP_PORT))
 });
 app.get("/api/passwords", (req, res, next) => {
-    var sql = "select * from passwords"
-    var params = []
+    var params = [req.query.mail]
+    var sql = "select passwordsPass from passwords where passwordsMail = ? "
     passwordsdb.all(sql, params, (err, rows) => {
         if (err) {
             res.status(400).json({"error": err.message});
@@ -63,6 +63,22 @@ app.get("/api/users", (req, res, next) => {
     var sql = "select * from users"
     var params = []
     usersdb.all(sql, params, (err, rows) => {
+        if (err) {
+            res.status(400).json({"error": err.message});
+            return;
+        }
+        res.json({
+            "message": "success",
+            "users": rows
+        })
+    });
+});
+
+app.get("/api/users/user", (req, res, next) => {
+    var params = [req.query.mail]
+    var sql = "select * from users where usersEmail = ?"
+    usersdb.all(sql, params, (err, rows) => {
+        console.log("getting user")
         if (err) {
             res.status(400).json({"error": err.message});
             return;
@@ -302,8 +318,24 @@ app.get("/api/salary", (req, res, next) => {
     });
 });
 app.get("/api/salary/period",(req, res, next) => {
+    console.log('gettin period from: ' + req.query.startDay +" to: "+req.query.endDay + " ID:  "+ req.query.id );
     var params = [req.query.startDay, req.query.endDay, req.query.id]
     var sql = "select * from salary where (salaryDate between ? and ? ) and salaryUserId = ?"
+    salarydb.all(sql,params, (err, rows) =>{
+        if (err){
+            res.status(400).jason({"err": err.message});
+            return;
+        }
+        res.json({
+            "message":"success",
+            "salary": rows
+        })
+    });
+});
+app.get("/api/salary/day",(req, res, next) => {
+    console.log('gettin day' + req.query.day +" ID:  "+ req.query.id );
+    var params = [req.query.day, req.query.id];
+    var sql = "select * from salary where salaryDate = ? and salaryUserId = ?"
     salarydb.all(sql,params, (err, rows) =>{
         if (err){
             res.status(400).jason({"err": err.message});

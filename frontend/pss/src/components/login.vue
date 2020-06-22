@@ -8,7 +8,10 @@
         <label class="labelmail">E-Mail</label><input class="mail" v-model="inputMail">
         <label class="labelpass">Password</label><input class="password" v-model="inputPass" type="password">
         <button class="logbutton" v-on:click="checkLog" v-on:keyup.enter="checkLog" v-show="!success">LOG IN</button>
-        <button class="accessbutton" v-show="success" v-on:click="accessSuccess" v-on:keyup.enter="accessSuccess"> IN TO PSS</button>
+<!--        <button class="accessbutton" v-show="success" v-on:click="accessSuccess" v-on:keyup.enter="accessSuccess"> IN TO PSS</button>-->
+        <router-link
+                :to="{name:'Home', params:{mail : inputMail, } }" v-show="success" class="accessbutton" tag="button" > IN TO PSS
+        </router-link>
     </div>
 </template>
 
@@ -19,11 +22,12 @@
             return {
                 inputMail: "",
                 inputPass: "",
-                passwords: [],
+                pass: "",
                 success: false
             }
         },
-        mounted() {
+       /* mounted() {
+
             fetch('http://127.0.0.1:3000/api/passwords/')
                 .then((response) => {
                     return response.json();
@@ -32,20 +36,39 @@
                     console.log(data.passwords);
                     this.passwords = data.passwords;
                 });
-        },
+        },*/
         methods: {
             checkLog: function () {
-                for (let i = 0; i < this.passwords.length; i++)
-                    if (this.inputMail == this.passwords[i].passwordsMail && this.inputPass == this.passwords[i].passwordsPass) {
-                        return this.success = true
+                console.log("log in called");
+                var url = new URL('http://127.0.0.1:3000/api/passwords');
+                var params = {
+                    mail: this.inputMail
+                };
+                url.search = new URLSearchParams(params).toString();
+                fetch(url,{
+                    method: 'GET',
+                    headers:{
+                        'Content-Type': 'application/json',
                     }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Success: ', data.passwords);
+                        this.pass = data.passwords[0].passwordsPass;
+                    })
+                    .catch((error) => {
+                    console.error('Error:', error);
+                });
+                if(this.inputPass == this.pass){
+                    this.success = true
+                }
 
             },
+
             accessSuccess: function () {
                 this.$emit('access-granted', this.inputMail)
             }
-        }
-
+        },
     }
 </script>
 

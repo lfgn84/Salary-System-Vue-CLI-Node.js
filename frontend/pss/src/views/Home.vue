@@ -1,18 +1,27 @@
 <template>
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png">
-    <login></login>
+    <users :email="email"></users>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import login from '@/components/login.vue'
+import users from "../components/users";
 
 export default {
   name: 'Home',
   components: {
-    login
-  }
+    users,
+
+  },
+  data:function(){
+    return{
+      email:""
+    }
+  },
+  created(){
+    this.email = this.$route.params.mail
+  },
 }
 </script>
