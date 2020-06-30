@@ -1,7 +1,8 @@
 <template>
-    <div>
-        <button @click="backWeek">GO BACK A WEEK</button><button @click="forwardWeek">GO FORWARD A WEEK</button><button @click="todaysWeek">GO TO TODAYS WEEK</button>
+    <div id="salary">
+        <button @click="todaysWeek">GO TO TODAYS WEEK</button>
         <div class="week">
+            <button @click="backWeek">GO BACK A WEEK</button>
             <div class="day" id="monday" @click="pickDay($event)" >{{weekData.weekDates[0]}}</div>
             <div class="day" id="tuesday" @click="pickDay($event)">{{weekData.weekDates[1]}}</div>
             <div class="day" id="wednesday" @click="pickDay($event)">{{weekData.weekDates[2]}}</div>
@@ -9,8 +10,9 @@
             <div class="day" id="friday" @click="pickDay($event)">{{weekData.weekDates[4]}}</div>
             <div class="day" id="saturday" @click="pickDay($event)">{{weekData.weekDates[5]}}</div>
             <div class="day" id="sunday" @click="pickDay($event)">{{weekData.weekDates[6]}}</div>
+            <button @click="forwardWeek">GO FORWARD A WEEK</button>
         </div>
-        <div id="show-edit">
+        <div class="show-edit">
    <!--         <div>
                 HOLA DAY !
 
@@ -22,19 +24,64 @@
                 <div>TOTAL: {{item.salaryIncome}}</div>
                 <button>edit</button> <button>erase</button></li>
             </div>-->
-            <div>
-                HOLA WEEK !
-
-                <li v-for="(item, index) in selectedWeek" v-bind:key="index">
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.0/css/bulma-rtl.css" integrity="sha256-8c3iUwMTRp4NGIoybGwbQUO27Luo4DwwC27e+2IXGzM=" crossorigin="anonymous" />
+               <div v-for="item in selectedWeek" v-bind:key="item.salaryDate">
+                <article class="message is-info">
+                    <div class="message-header">
+                        <p>DATE: {{item.salaryDate}}</p>
+                        <button class="delete" aria-label="delete"></button>
+                    </div>
+                    <div class="message-body">
+                        <div>PROJECT: {{item.salaryProject}}</div>
+                        <div>HOUR FARE: {{item.salaryHourFare}}</div>
+                        <div>WORKED HOURS: {{item.salaryWorkedHours}}</div>
+                        <div>TOTAL: {{item.salaryIncome}}</div>
+                    </div>
+                    <footer>
+                        <button>edit</button><button>erase</button>
+                    </footer>
+                </article>
+                </div>
+                <!--<li><div class="card">
+                    <header class="card-header">
+                        <p class="card-header-title">
+                            Component
+                        </p>
+                        <a href="#" class="card-header-icon" aria-label="more options">
+      <span class="icon">
+        <i class="fas fa-angle-down" aria-hidden="true"></i>
+      </span>
+                        </a>
+                    </header>
+                    <div class="card-content">
+                        <div class="content">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.
+                            <a href="#">@bulmaio</a>. <a href="#">#css</a> <a href="#">#responsive</a>
+                            <br>
+                            <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <a href="#" class="card-footer-item">Save</a>
+                        <a href="#" class="card-footer-item">Edit</a>
+                        <a href="#" class="card-footer-item">Delete</a>
+                    </footer>
+                </div></li>-->
+              <!--  <li v-for="(item, index) in selectedWeek" v-bind:key="index">
                 <div>DATE: {{item.salaryDate}}</div>
                 <div>PROJECT: {{item.salaryProject}}</div>
                 <div>HOUR FARE: {{item.salaryHourFare}}</div>
                 <div>WORKED HOURS: {{item.salaryWorkedHours}}</div>
                 <div>TOTAL: {{item.salaryIncome}}</div>
-                <button>edit</button> <button>erase</button></li>
-            </div>
+                <button>edit</button> <button>erase</button></li>-->
         </div>
-        <ul> ADD A NEW WORKED SHIFT
+        <ul id="addDay"> ADD A NEW WORKED SHIFT
+            <div class="field">
+                <label class="label">Name</label>
+                <div class="control">
+                    <input class="input" type="text" placeholder="e.g Alex Smith">
+                </div>
+            </div>
             <li><span> {{workDate}} : DAY WORKED</span></li>
             <li><input type="text" v-model="projectCode"><span> : PROJECT CODE</span></li>
             <li><input type="number" min="0" v-model="priceHour"><span> : PRICE PER WORKED HOUR</span></li>
@@ -157,17 +204,17 @@
                     this.prevent = "Please enter working day information"
                 }
 
-               else if (this.workDate == "") {
+               else if (this.workDate == "" || this.workDate == null) {
                     this.prevent = "Please enter a schedualed worked date"
                 }
-                else if (this.projectCode == "") {
+                else if (this.projectCode == "" || this.projectCode == null) {
                     this.prevent = "Please enter working date project code"
                 }
                  else if (this.priceHour != 479 || this.priceHour == 0 || this.priceHour == null) {
                     this.prevent = "Please enter correct hour fare"
                 }
                 else if (this.workedHours == "" || this.workedHours == 0 || this.workedHours == null) {
-                    this.prevent = "Please enter a amount of hours worked"
+                    this.prevent = "Please enter an amount of hours worked"
                 } else {
                     var day = {
                         salaryUserId: this.user[0].usersId,
@@ -202,7 +249,7 @@
                     this.workedDays.push(day);
                     this.workDate = "";
                     this.projectCode = "";
-                    this.priceHour = "";
+                    this.priceHour = 479;
                     this.workedHours = "";
                 }
             },
@@ -485,6 +532,22 @@
         font-family: 'Raleway', Tahoma;
         font-size: 20px;
         background-color: aqua;
+    }
+    li{
+        text-align: left;
+    }
+    .show-edit{
+        display: inline-flex;
+        width: 100%;
+        text-align: left;
+        align-items: flex-start;
+    }
+    article{
+        margin-right: 5px;
+
+    }
+    footer{
+box-sizing: border-box
     }
     button{
         max-width: 30%;

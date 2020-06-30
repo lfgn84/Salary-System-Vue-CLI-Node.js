@@ -61,6 +61,7 @@
                 });
                 if(this.inputPass == this.pass){
                     this.success = true
+                    sessionStorage.mail = this.inputMail
                 }
 
             },

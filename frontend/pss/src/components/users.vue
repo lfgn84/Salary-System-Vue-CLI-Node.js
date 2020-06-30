@@ -10,6 +10,7 @@
             <li><p1>personal number: </p1><p2>{{user[0].usersPN}}</p2></li>
             <li><p1>e-mail: </p1><p2>{{user[0].usersEmail}}</p2></li>
             <li><p1>PSS id: </p1><p2>{{user[0].usersId}}</p2></li>
+            <li><p1>POT: {{pot[0].pot}} kr</p1></li>
         </ul>
             <button @click="logOut">LOG OUT</button>
         </div>
@@ -35,11 +36,13 @@
         },
         data: function () {
             return {
-                user: []
+                user: [],
+                pot: []
 
             }
         },
         created() {
+            if(sessionStorage.mail) {this.email = sessionStorage.mail;}
             var url = new URL('http://127.0.0.1:3000/api/users/user');
             var params = {
                 mail: this.email
@@ -53,6 +56,25 @@
                     console.log(data.users);
                     this.user = data.users;
                 });
+
+        },
+        mounted() {
+            var url = new URL('http://127.0.0.1:3000/api/salary/pot');
+            var params = {
+                id: 0//this.user[0].usersId
+            };
+            url.search = new URLSearchParams(params).toString();
+            console.log(url)
+            fetch(url)
+                .then((response) => {
+                    return response.json();
+                })
+                .then((data) => {
+                    console.log(data.salary);
+                    this.pot = data.salary;
+                });
+
+
         },
 /*        watch: {
             email: function () {
@@ -106,7 +128,7 @@
     }
     #salary{
         grid-column: 2/6;
-        grid-row: 2;
+        grid-row: 2/10;
 
     }
 }

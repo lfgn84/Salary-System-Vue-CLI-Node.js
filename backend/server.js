@@ -347,6 +347,20 @@ app.get("/api/salary/day",(req, res, next) => {
         })
     });
 });
+app.get("/api/salary/pot",(req,res,next)=>{
+    var params = [req.query.id];
+    var sql = "select sum(salaryIncome) as pot from salary where salaryUserId = ? "
+    salarydb.all(sql,params,(err,rows)=>{
+        if(err){
+            res.status(400).jason({"err": err.message});
+            return;
+        }
+        res.json({
+            "message":"success",
+            "salary": rows
+        })
+    });
+});
 app.post("/api/salary", (req, res, next) => {
     var errors = []
     if (!req.body.salaryUserId || !req.body.salaryDate) {
