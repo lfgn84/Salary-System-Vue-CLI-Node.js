@@ -320,7 +320,7 @@ app.get("/api/salary", (req, res, next) => {
 app.get("/api/salary/period",(req, res, next) => {
     console.log('gettin period from: ' + req.query.startDay +" to: "+req.query.endDay + " ID:  "+ req.query.id );
     var params = [req.query.startDay, req.query.endDay, req.query.id]
-    var sql = "select * from salary where (salaryDate between ? and ? ) and salaryUserId = ?"
+    var sql = "select * from salary where (salaryDate between ? and ? ) and salaryUserId = ? order by salaryDate"
     salarydb.all(sql,params, (err, rows) =>{
         if (err){
             res.status(400).jason({"err": err.message});
@@ -404,5 +404,17 @@ app.post("/api/salary", (req, res, next) => {
 // Root path
 app.get("/", (req, res, next) => {
     res.json({"message": "Ok"})
+});
+app.delete("/api/salary/:id", (req, res, next) => {
+    salarydb.run(
+        'DELETE FROM salary WHERE salaryId = ?',
+        req.params.id,
+        function (err, result) {
+            if (err) {
+                res.status(400).json({"error": res.message})
+                return;
+            }
+            res.json({"message": "deleted", rows: this.changes})
+        });
 });
 

@@ -25,7 +25,7 @@
                 <button>edit</button> <button>erase</button></li>
             </div>-->
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.0/css/bulma-rtl.css" integrity="sha256-8c3iUwMTRp4NGIoybGwbQUO27Luo4DwwC27e+2IXGzM=" crossorigin="anonymous" />
-               <div v-for="item in selectedWeek" v-bind:key="item.salaryDate">
+              <!-- <div v-for="item in selectedWeek" v-bind:key="item.salaryDate">
                 <article class="message is-info">
                     <div class="message-header">
                         <p>DATE: {{item.salaryDate}}</p>
@@ -42,6 +42,13 @@
                     </footer>
                 </article>
                 </div>
+-->
+            ----
+
+            <div v-for="(item, index) in selectedWeek" v-bind:key="item.salaryDate">
+                <worked-day :date="selectedWeek[index]" @remove="gettingWeekInfo"></worked-day>
+
+            </div>
                 <!--<li><div class="card">
                     <header class="card-header">
                         <p class="card-header-title">
@@ -116,9 +123,11 @@
 
 <script>
     import{eachDayOfInterval, startOfWeek, endOfWeek, subWeeks, addWeeks, getISODay, getDate, getMonth, getYear /*,format*/} from 'date-fns'
+    import workedDay from "./workedDay";
 
     export default {
         name: "salary",
+        components: {workedDay},
         props:{
             user: [Object , Array]
         },

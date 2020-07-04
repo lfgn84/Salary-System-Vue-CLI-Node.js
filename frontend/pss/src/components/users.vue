@@ -10,6 +10,7 @@
             <li><p1>personal number: </p1><p2>{{user[0].usersPN}}</p2></li>
             <li><p1>e-mail: </p1><p2>{{user[0].usersEmail}}</p2></li>
             <li><p1>PSS id: </p1><p2>{{user[0].usersId}}</p2></li>
+            <li><p1> id: </p1><p2>{{id}}</p2></li>
             <li><p1>POT: {{pot[0].pot}} kr</p1></li>
         </ul>
             <button @click="logOut">LOG OUT</button>
@@ -58,10 +59,10 @@
                 });
 
         },
-        mounted() {
+        updated() {
             var url = new URL('http://127.0.0.1:3000/api/salary/pot');
             var params = {
-                id: 0//this.user[0].usersId
+                id: this.user[0].usersId
             };
             url.search = new URLSearchParams(params).toString();
             console.log(url)
@@ -108,6 +109,7 @@
         grid-auto-rows: 100px;
     }
     #user{
+        padding-left: 30px;
         grid-column: 1/2;
         grid-row: 3/5;
 
