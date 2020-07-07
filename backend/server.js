@@ -401,6 +401,48 @@ app.post("/api/salary", (req, res, next) => {
 
     })
 });
+app.put("/api/salary/:id", (req, res, next) => {
+    var errors = []
+    if (!req.body.salaryUserId || !req.body.salaryDate || !req.body.salaryProject || !req.body.salaryHourFare || !req.body.salaryWorkedHours || !req.body.salaryIncome) {
+        errors.push("No valid object");
+    }
+    var data = {
+        salaryUserId: req.body.salaryUserId,
+        salaryDate: req.body.salaryDate,
+        salaryProject: req.body.salaryProject,
+        salaryHourFare: req.body.salaryHourFare,
+        salaryWorkedHours: req.body.salaryWorkedHours,
+        salaryIncome: req.body.salaryIncome
+    };
+    var params = [
+        data.salaryUserId,
+        data.salaryDate,
+        data.salaryProject,
+        data.salaryHourFare,
+        data.salaryWorkedHours,
+        data.salaryIncome,
+        req.params.id];
+    var sql = `UPDATE salary SET
+                salaryUserId = ?,
+                salaryDate = ?,
+                salaryProject = ?,
+                salaryHourFare = ?,
+                salaryWorkedHours = ?,
+                salaryIncome = ?
+                where salaryId = ?`
+    salarydb.run(sql, params, function (err, result) {
+        if (err) {
+            res.status(400).json({"error": err.message})
+            return;
+        }
+        res.json({
+            "message": "success",
+            "salary": data,
+            "id": this.lastID
+        })
+
+    })
+});
 // Root path
 app.get("/", (req, res, next) => {
     res.json({"message": "Ok"})

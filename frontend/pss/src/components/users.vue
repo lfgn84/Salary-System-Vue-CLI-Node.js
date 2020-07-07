@@ -1,22 +1,25 @@
 <template>
     <div class="consultant">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.0/css/bulma-rtl.css" integrity="sha256-8c3iUwMTRp4NGIoybGwbQUO27Luo4DwwC27e+2IXGzM=" crossorigin="anonymous" />
+
         <h2>Consultant</h2>
 
         <!--            <li v-for="users in users" v-bind:key="users.usersId">{{ users.usersName }} {{ users.usersPN }}</li>-->
         <div id="user">
         <ul>
-            <li><p1>PSS user range: </p1><p2>{{user[0].usersRange}}</p2></li>
-            <li><p1>name: </p1><p2>{{user[0].usersName}} {{user.usersLastName}}</p2></li>
-            <li><p1>personal number: </p1><p2>{{user[0].usersPN}}</p2></li>
+            <li><p1>PSS User Range: </p1><p2>{{user[0].usersRange}}</p2></li>
+            <li><p1>Name: </p1><p2>{{user[0].usersName}} {{user.usersLastName}}</p2></li>
+            <li><p1>PN: </p1><p2>{{user[0].usersPN}}</p2></li>
             <li><p1>e-mail: </p1><p2>{{user[0].usersEmail}}</p2></li>
             <li><p1>PSS id: </p1><p2>{{user[0].usersId}}</p2></li>
-            <li><p1> id: </p1><p2>{{id}}</p2></li>
-            <li><p1>POT: {{pot[0].pot}} kr</p1></li>
+            <li><p1>Income Pot: </p1> <p2 id="pot">{{pot[0].pot}} kr</p2></li>
+            <li>
+                <button class="button is-medium" @click="logOut">Log Out</button>
+            </li>
         </ul>
-            <button @click="logOut">LOG OUT</button>
         </div>
         <div id="salary">
-        <salary :user="user"></salary>
+        <salary :user="user" @update="updatePot"></salary>
         </div>
     </div>
 </template>
@@ -59,7 +62,13 @@
                 });
 
         },
-        updated() {
+        watch:{
+            user: async function() {
+                this.updatePot()
+            }
+        },
+        methods:{
+        updatePot: function() {
             var url = new URL('http://127.0.0.1:3000/api/salary/pot');
             var params = {
                 id: this.user[0].usersId
@@ -77,6 +86,11 @@
 
 
         },
+            logOut: function(){
+                location.reload()
+            }
+        }
+    }
 /*        watch: {
             email: function () {
                 for (var i = 0; i <= this.users.length; i++) {
@@ -88,17 +102,11 @@
                 }
             }
         },*/
-        methods:{
-            logOut: function(){
-                location.reload()
-            }
-        }
-    }
+
 </script>
 
 <style scoped>
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@500&family=Raleway&display=swap');
-
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
 
 
     @media screen and (min-width: 1025px){
@@ -114,18 +122,28 @@
         grid-row: 3/5;
 
     }
+    p1{
+        font-weight: bold;
+    }
     h2 {
         text-align: center;
         grid-row: 2/3;
-        font-family: 'Montserrat Alternates', Arial;
-        font-size: 30px;
+        font-family: 'sans-serif', Arial;
+        font-size: 40px;
     }
     ul {
 
     }
+        #pot{
+            border: solid thick lightblue;
+            background-color: #42b983;
+            color: white;
+            padding-right: 15px;
+            padding-left: 5px;
+        }
     li {
-        font-family: "Raleway", Tahoma;
-        font-size: 20px;
+        font-family: "sans-serif", Tahoma;
+        font-size: 27px;
         text-align: left;
     }
     #salary{
@@ -197,6 +215,7 @@
         font-size: 20px;
         text-align: center;
     }
+
     #salary{
         grid-row: 4;
         text-align: center;

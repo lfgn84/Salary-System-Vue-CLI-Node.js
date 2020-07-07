@@ -1,16 +1,96 @@
 <template>
     <div id="salary">
-        <button @click="todaysWeek">GO TO TODAYS WEEK</button>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.0/css/bulma-rtl.css" integrity="sha256-8c3iUwMTRp4NGIoybGwbQUO27Luo4DwwC27e+2IXGzM=" crossorigin="anonymous" />
+
+
         <div class="week">
-            <button @click="backWeek">GO BACK A WEEK</button>
-            <div class="day" id="monday" @click="pickDay($event)" >{{weekData.weekDates[0]}}</div>
-            <div class="day" id="tuesday" @click="pickDay($event)">{{weekData.weekDates[1]}}</div>
-            <div class="day" id="wednesday" @click="pickDay($event)">{{weekData.weekDates[2]}}</div>
-            <div class="day" id="thursday" @click="pickDay($event)">{{weekData.weekDates[3]}}</div>
-            <div class="day" id="friday" @click="pickDay($event)">{{weekData.weekDates[4]}}</div>
-            <div class="day" id="saturday" @click="pickDay($event)">{{weekData.weekDates[5]}}</div>
-            <div class="day" id="sunday" @click="pickDay($event)">{{weekData.weekDates[6]}}</div>
-            <button @click="forwardWeek">GO FORWARD A WEEK</button>
+        <div class="arrows">
+            <button class="button is-medium" id="arrow1" @click="backWeek">Back Week</button>
+            <div class="separator"></div>
+            <button class="button is-medium" id="arrow2" @click="forwardWeek">Forward Week</button>
+            <div class="separator"></div>
+            <button class="button is-medium" id="arrow3" @click="todaysWeek">Today's Week</button>
+            <div></div>
+            <div>
+            <span style="font-weight: bold; font-size: 15px">Project: </span> <select v-model="projectCode">
+                <option v-for="option in projectCodes" v-bind:key="option">
+                    {{ option.project }}
+                </option>
+            </select>
+
+            </div>
+        </div>
+            <div class="day" id="monday" @click="pickDay($event)" >
+               <!-- <div v-for="index in (weekData.weekDates[0].split('/'))" v-bind:key="index">
+                <div>{{index}}</div>
+                </div>-->
+                    <div v-for="(item, index) in dayItems(weekData.weekDates[0])"
+                        :style="itemStyle(index)"
+                        :key="index">
+                        {{item}}
+                    </div>
+
+            </div>
+            <div class="day" id="tuesday" @click="pickDay($event)">
+               <!-- <div v-for="item in (weekData.weekDates[1].split('/'))" v-bind:key="item">
+                    <div>{{item}}</div>
+                </div>-->
+                <div v-for="(item, index) in dayItems(weekData.weekDates[1])"
+                     :style="itemStyle(index)"
+                     :key="index">
+                    {{item}}
+                </div>
+            </div>
+            <div class="day" id="wednesday" @click="pickDay($event)">
+               <!-- <div v-for="item in (weekData.weekDates[2].split('/'))" v-bind:key="item">
+                    <div>{{item}}</div>
+                </div>-->
+                <div v-for="(item, index) in dayItems(weekData.weekDates[2])"
+                     :style="itemStyle(index)"
+                     :key="index">
+                    {{item}}
+                </div>
+            </div>
+            <div class="day" id="thursday" @click="pickDay($event)">
+                <!--<div v-for="item in (weekData.weekDates[3].split('/'))" v-bind:key="item">
+                    <div>{{item}}</div>
+                </div>-->
+                <div v-for="(item, index) in dayItems(weekData.weekDates[3])"
+                     :style="itemStyle(index)"
+                     :key="index">
+                    {{item}}
+                </div>
+            </div>
+            <div class="day" id="friday" @click="pickDay($event)">
+               <!-- <div v-for="item in (weekData.weekDates[4].split('/'))" v-bind:key="item">
+                    <div>{{item}}</div>
+                </div>-->
+                <div v-for="(item, index) in dayItems(weekData.weekDates[4])"
+                     :style="itemStyle(index)"
+                     :key="index">
+                    {{item}}
+                </div>
+            </div>
+            <div class="day" id="saturday" @click="pickDay($event)">
+                <!--<div v-for="item in (weekData.weekDates[5].split('/'))" v-bind:key="item">
+                    <div>{{item}}</div>
+                </div>-->
+                <div v-for="(item, index) in dayItems(weekData.weekDates[5])"
+                     :style="itemStyle(index)"
+                     :key="index">
+                    {{item}}
+                </div>
+            </div>
+            <div class="day" id="sunday" @click="pickDay($event)">
+                <!--<div v-for="item in (weekData.weekDates[6].split('/'))" v-bind:key="item">
+                    <div>{{item}}</div>
+                </div>-->
+                <div v-for="(item, index) in dayItems(weekData.weekDates[6])"
+                     :style="itemStyle(index)"
+                     :key="index">
+                    {{item}}
+                </div>
+            </div>
         </div>
         <div class="show-edit">
    <!--         <div>
@@ -24,7 +104,6 @@
                 <div>TOTAL: {{item.salaryIncome}}</div>
                 <button>edit</button> <button>erase</button></li>
             </div>-->
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.0/css/bulma-rtl.css" integrity="sha256-8c3iUwMTRp4NGIoybGwbQUO27Luo4DwwC27e+2IXGzM=" crossorigin="anonymous" />
               <!-- <div v-for="item in selectedWeek" v-bind:key="item.salaryDate">
                 <article class="message is-info">
                     <div class="message-header">
@@ -43,10 +122,9 @@
                 </article>
                 </div>
 -->
-            ----
 
-            <div v-for="(item, index) in selectedWeek" v-bind:key="item.salaryDate">
-                <worked-day :date="selectedWeek[index]" @remove="gettingWeekInfo"></worked-day>
+            <div id="worked" v-for="(item, index) in selectedWeek" v-bind:key="item.salaryDate">
+                <worked-day :date="selectedWeek[index]" @remove="gettingWeekInfo" @refresh="gettingWeekInfo"></worked-day>
 
             </div>
                 <!--<li><div class="card">
@@ -90,7 +168,7 @@
                 </div>
             </div>
             <li><span> {{workDate}} : DAY WORKED</span></li>
-            <li><input type="text" v-model="projectCode"><span> : PROJECT CODE</span></li>
+            <li><span> {{projectCode}} : PROJECT CODE</span></li>
             <li><input type="number" min="0" v-model="priceHour"><span> : PRICE PER WORKED HOUR</span></li>
             <li><input type="number" min="0" v-model="workedHours"> : WORKED HOURS</li>
             <li><span>{{daySalary}}</span><span> DAY INCOME</span></li>
@@ -136,6 +214,7 @@
                 startDate: null,
                 endDate : null,
                 workDate : null,
+                projectCodes:[{project: ""},{project:'PSS'}, {project:'Stena Line'}, {project: 'Volvo'}],
                 projectCode:"",
                 priceHour:479,
                 workedHours:"",
@@ -149,12 +228,14 @@
                     today: new Date(),
                     weekDays:['monday','tuesday','wednesday', 'thursday', 'friday','saturday','sunday'],
                     rawDates:[],
-                    weekDates:[]
+                    weekDates:[],
+
 
 
                 }
             }
-        },mounted(){
+        },
+        mounted(){
             this.gettingWeekInfo()
         },
         created(){
@@ -190,8 +271,44 @@
                     case 7:
                         day = 'Sunday';
                         break;
-
-
+                }
+                switch (month) {
+                    case 1:
+                        month = 'January';
+                        break;
+                    case 2:
+                        month = 'February';
+                        break;
+                    case 3:
+                        month = 'March';
+                        break;
+                    case 4:
+                        month = 'April';
+                        break;
+                    case 5:
+                        month = 'May';
+                        break;
+                    case 6:
+                        month = 'June';
+                        break;
+                    case 7:
+                        month = 'July';
+                        break;
+                    case 8:
+                        month = 'August';
+                        break;
+                    case 9:
+                        month = 'September';
+                        break;
+                    case 10:
+                        month = 'October';
+                        break;
+                    case 11:
+                        month = 'November';
+                        break;
+                    case 12:
+                        month = 'December';
+                        break;
                 }
                 let trimmedDate = day + "/" + date + "/" + month  +  "/" + year ;
                 this.weekData.weekDates[i] = trimmedDate;
@@ -205,7 +322,6 @@
             daySalary(){
                 return this.priceHour * this.workedHours
             }
-
         },
         methods:{
             calcDay: function() {
@@ -317,8 +433,44 @@
                         case 7:
                             day = 'Sunday';
                             break;
-
-
+                    }
+                    switch (month) {
+                        case 1:
+                            month = 'January';
+                            break;
+                        case 2:
+                            month = 'February';
+                            break;
+                        case 3:
+                            month = 'March';
+                            break;
+                        case 4:
+                            month = 'April';
+                            break;
+                        case 5:
+                            month = 'May';
+                            break;
+                        case 6:
+                            month = 'June';
+                            break;
+                        case 7:
+                            month = 'July';
+                            break;
+                        case 8:
+                            month = 'August';
+                            break;
+                        case 9:
+                            month = 'September';
+                            break;
+                        case 10:
+                            month = 'October';
+                            break;
+                        case 11:
+                            month = 'November';
+                            break;
+                        case 12:
+                            month = 'December';
+                            break;
                     }
                     let trimmedDate = day + "/" + date + "/" + month  +  "/" + year ;
                     this.weekData.weekDates[i] = trimmedDate;
@@ -365,8 +517,44 @@
                         case 7:
                             day = 'Sunday';
                             break;
-
-
+                    }
+                    switch (month) {
+                        case 1:
+                            month = 'January';
+                            break;
+                        case 2:
+                            month = 'February';
+                            break;
+                        case 3:
+                            month = 'March';
+                            break;
+                        case 4:
+                            month = 'April';
+                            break;
+                        case 5:
+                            month = 'May';
+                            break;
+                        case 6:
+                            month = 'June';
+                            break;
+                        case 7:
+                            month = 'July';
+                            break;
+                        case 8:
+                            month = 'August';
+                            break;
+                        case 9:
+                            month = 'September';
+                            break;
+                        case 10:
+                            month = 'October';
+                            break;
+                        case 11:
+                            month = 'November';
+                            break;
+                        case 12:
+                            month = 'December';
+                            break;
                     }
                     let trimmedDate = day + "/" + date + "/" + month  +  "/" + year ;
                     this.weekData.weekDates[i] = trimmedDate;
@@ -411,8 +599,44 @@
                         case 7:
                             day = 'Sunday';
                             break;
-
-
+                    }
+                    switch (month) {
+                        case 1:
+                            month = 'January';
+                            break;
+                        case 2:
+                            month = 'February';
+                            break;
+                        case 3:
+                            month = 'March';
+                            break;
+                        case 4:
+                            month = 'April';
+                            break;
+                        case 5:
+                            month = 'May';
+                            break;
+                        case 6:
+                            month = 'June';
+                            break;
+                        case 7:
+                            month = 'July';
+                            break;
+                        case 8:
+                            month = 'August';
+                            break;
+                        case 9:
+                            month = 'September';
+                            break;
+                        case 10:
+                            month = 'October';
+                            break;
+                        case 11:
+                            month = 'November';
+                            break;
+                        case 12:
+                            month = 'December';
+                            break;
                     }
                     let trimmedDate = day + "/" + date + "/" + month  +  "/" + year ;
                     this.weekData.weekDates[i] = trimmedDate;
@@ -511,9 +735,10 @@
                         console.log(data.salary);
                         this.selectedWeek = data.salary;
 
-                    })
-            }
-            ,
+                    });
+                this.$emit('update');
+
+            },
             formatDate:function (date) {
         var d = new Date(date),
             month = '' + (d.getMonth() + 1),
@@ -526,7 +751,28 @@
             day = '0' + day;
 
         return [year, month, day].join('-');
-    }
+    },
+            dayItems: function(data){
+                var x = data.split("/");
+                return x;
+            },
+            itemStyle: function (i){
+                var style = {};
+                if(i == 0){
+                   style.fontWeight = 'bold';
+                   style.fontSize = "23px";
+                } else if (i == 1){
+                  style.fontSize = "60px";
+
+                } else if(i == 2){
+                    style.fontSize = "30px";
+                }
+                else if(i == 3){
+                    style.fontSize = "15px";
+
+                }
+                return style
+            }
 
         }
     }
@@ -549,7 +795,7 @@
         display: inline-flex;
         width: 100%;
         text-align: left;
-        align-items: flex-start;
+        justify-content: flex-start;
     }
     article{
         margin-right: 5px;
@@ -560,6 +806,26 @@ box-sizing: border-box
     }
     button{
         max-width: 30%;
+        cursor: pointer;
+    }
+    #arrow1{
+        max-width: 100%;
+        font-size: 18px;
+        font-family: sans-serif;
+    }
+    #arrow2{
+        max-width: 100%;
+        font-size: 18px;
+        font-family: sans-serif;
+    }
+    #arrow3{
+        max-width: 100%;
+        font-size: 18px;
+        font-family: sans-serif;
+    }
+    .separator{
+        width: 30px;
+        height: 15px;
     }
     .week{
         display: inline-flex;
@@ -567,28 +833,40 @@ box-sizing: border-box
     .day{
         height: 200px;
         width: 150px;
-        border:thick solid #0000FF;
+        border-right:thick solid black;
+        border-bottom: thick solid black;
     }
-
+    .arrows{
+        width: 150px;
+        display: flex;
+        flex-direction: column;
+    }
     #monday{
-        background-color: darkblue;
+        color: black;
+        cursor: pointer;
     }
     #tuesday{
-        background-color: green;
+        color: black;
+        cursor: pointer;
     }
     #wednesday{
-        background-color: yellow;
+        color: black;
+        cursor: pointer;
     }
     #thursday{
-        background-color: rebeccapurple;
+        color: black;
+        cursor: pointer;
     }
     #friday{
-        background-color: lightseagreen;
+        color: black;
+        cursor: pointer;
     }
     #saturday{
-        background-color: chartreuse;
+        color: black;
+        cursor: pointer;
     }
     #sunday{
-        background-color: coral;
+        color: black;
+        cursor: pointer;
     }
 </style>
