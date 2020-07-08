@@ -160,8 +160,37 @@
                 <div>TOTAL: {{item.salaryIncome}}</div>
                 <button>edit</button> <button>erase</button></li>-->
         </div>
-        <ul id="addDay"> ADD A NEW WORKED SHIFT
-            <div class="field">
+        <div class="centered-element" v-show="false">
+        <div class="card">
+            <header class="card-header">
+                <p class="card-header-title">
+                    Register worked day
+                </p>
+                <a href="#" class="card-header-icon" aria-label="more options">
+      <span class="icon">
+        <i class="fas fa-angle-down" aria-hidden="true"></i>
+      </span>
+                </a>
+            </header>
+            <div class="card-content">
+                <div class="content">
+                    <li><span> {{workDate}} : DAY WORKED</span></li>
+                    <li><span> {{projectCode}} : PROJECT CODE</span></li>
+                    <li><input type="number" min="0" v-model="priceHour"><span> : PRICE PER WORKED HOUR</span></li>
+                    <li><input type="number" min="0" v-model="workedHours"> : WORKED HOURS</li>
+                    <li><span>{{daySalary}}</span><span> DAY INCOME</span></li>
+                    <li><span>{{prevent}}</span></li>
+                    <br>
+                </div>
+            </div>
+            <footer class="card-footer">
+                <a class="card-footer-item" @click="calcDay">Save</a>
+                <a class="card-footer-item">Cancel</a>
+            </footer>
+        </div>
+        </div>
+        <ul id="addDay">
+           <!-- <div class="field">
                 <label class="label">Name</label>
                 <div class="control">
                     <input class="input" type="text" placeholder="e.g Alex Smith">
@@ -173,7 +202,8 @@
             <li><input type="number" min="0" v-model="workedHours"> : WORKED HOURS</li>
             <li><span>{{daySalary}}</span><span> DAY INCOME</span></li>
             <li><span>{{prevent}}</span></li>
-            <button @click="calcDay">SUBMIT DAY</button>
+            <button @click="calcDay">SUBMIT DAY</button>-->
+
             <li v-for="(item, index) in workedDays" v-bind:key="index">
                 <div>DATE: {{item.salaryDate}}</div>
                 <div>PROJECT: {{item.salaryProject}}</div>
@@ -788,6 +818,11 @@
         font-size: 20px;
         background-color: aqua;
     }
+    .content{
+        list-style-type: none;
+        padding-left: 30px;
+        font-size: 40px;
+    }
     li{
         text-align: left;
     }
@@ -868,5 +903,14 @@ box-sizing: border-box
     #sunday{
         color: black;
         cursor: pointer;
+    }
+    .centered-element {
+        height: 100px;
+        width: 800px;
+        position: absolute;
+        left: 20%;
+        margin-left: 50px;
+        top: 50%;
+        margin-top: 50px;
     }
 </style>

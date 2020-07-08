@@ -13,7 +13,7 @@
         </div>
         <footer>
 <!--            <button @click="edit">edit</button><button @click="erase">erase</button><button v-show="editing" @click="editing = false">ok</button>-->
-            <button v-show="!editing" @click="edit()">edit</button><button v-show="!editing" @click="erase()">erase</button><button v-show="editing" @click="change()">save</button><button v-show="editing" @click="cancelEdit">cancel</button>
+            <button v-show="!editing"  class="button is-alert is-light" @click="edit()">edit</button><button class="button is-primary is-light" v-show="!editing"  @click="erase()">erase</button><button v-show="editing" class="button is-primary is-light" @click="change()">save</button><button class="button is-primary is-light" v-show="editing" @click="cancelEdit">cancel</button>
         </footer>
     </article>
     </div>
@@ -96,13 +96,13 @@
 <style scoped>
     .workedDay{
         margin-right: 3px;
+        margin-top: 5px;
     }
     footer{
-        display: inline-flex;
 
     }
     button{
-        max-width: 100px;
+        max-width: 50%;
     }
 
 </style>
