@@ -13,7 +13,7 @@
         </div>
         <footer>
 <!--            <button @click="edit">edit</button><button @click="erase">erase</button><button v-show="editing" @click="editing = false">ok</button>-->
-            <button v-show="!editing"  class="button is-alert is-light" @click="edit()">edit</button><button class="button is-primary is-light" v-show="!editing"  @click="erase()">erase</button><button v-show="editing" class="button is-primary is-light" @click="change()">save</button><button class="button is-primary is-light" v-show="editing" @click="cancelEdit">cancel</button>
+            <button class="button is-alert is-light" @click="edit()">edit</button><button class="button is-primary is-light"  @click="really">erase</button>
         </footer>
     </article>
     </div>
@@ -27,8 +27,7 @@
         },
         data(){
             return{
-                dayInfo: "",
-                editing: false
+                dayInfo: ""
             }
         },
         created(){
@@ -40,6 +39,9 @@
             }
         },
         methods:{
+            really: function(){
+                alert(" Are you sure ?")
+            },
             erase: async function(){
                 fetch('http://127.0.0.1:3000/api/salary/'+this.dayInfo.salaryId,  {
                     method: 'DELETE',
@@ -57,40 +59,19 @@
                 this.$emit('remove');
             },
             edit: async function(){
-                this.editing = true
-            },
-            cancelEdit: function(){
-                this.dayInfo = JSON.parse(JSON.stringify(this.date));
-                this.editing = false
+                let data = {
+                    salaryId : this.dayInfo.salaryId,
+                    salaryDate: this.dayInfo.salaryDate,
+                    salaryProject: this.dayInfo.salaryProject,
+                    salaryHourFare: this.dayInfo.salaryHourFare,
+                    salaryWorkedHours: this.dayInfo.salaryWorkedHours,
+                    salaryIncome: this.dayInfo.salaryHourFare * this.dayInfo.salaryWorkedHours
 
-            },
-            change: function(){
-                fetch('http://127.0.0.1:3000/api/salary/'+this.dayInfo.salaryId,  {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        salaryUserId : this.dayInfo.salaryUserId,
-                        salaryDate: this.dayInfo.salaryDate,
-                        salaryProject: this.dayInfo.salaryProject,
-                        salaryHourFare: this.dayInfo.salaryHourFare,
-                        salaryWorkedHours: this.dayInfo.salaryWorkedHours,
-                        salaryIncome: this.dayInfo.salaryHourFare * this.dayInfo.salaryWorkedHours
-                    }),
-                }).then(response => response.json())
-                    .then(data => {
-                        console.log('Success:', data);
-                    })
-                    .catch((error) => {
-                        console.error('Error:', error);
-                    });
-                this.editing = false;
-                this.$emit('refresh');
-
+                };
+                this.$emit('edit', data)
             }
-        }
     }
+}
 </script>
 
 <style scoped>

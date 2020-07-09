@@ -5,11 +5,11 @@
 
         <div class="week">
         <div class="arrows">
-            <button class="button is-medium" id="arrow1" @click="backWeek">Back Week</button>
+            <button class="button is-medium" id="arrow1" @click="backWeek" :disabled="inputEdit">Back Week</button>
             <div class="separator"></div>
-            <button class="button is-medium" id="arrow2" @click="forwardWeek">Forward Week</button>
+            <button class="button is-medium" id="arrow2" @click="forwardWeek" :disabled="inputEdit">Forward Week</button>
             <div class="separator"></div>
-            <button class="button is-medium" id="arrow3" @click="todaysWeek">Today's Week</button>
+            <button class="button is-medium" id="arrow3" @click="todaysWeek" :disabled="inputEdit">Today's Week</button>
             <div></div>
             <div>
             <span style="font-weight: bold; font-size: 15px">Project: </span> <select v-model="projectCode">
@@ -20,7 +20,7 @@
 
             </div>
         </div>
-            <div class="day" id="monday" @click="pickDay($event)" >
+            <div class="day" id="monday" @click="pickDay($event)" :disabled="inputEdit">
                <!-- <div v-for="index in (weekData.weekDates[0].split('/'))" v-bind:key="index">
                 <div>{{index}}</div>
                 </div>-->
@@ -31,7 +31,7 @@
                     </div>
 
             </div>
-            <div class="day" id="tuesday" @click="pickDay($event)">
+            <div class="day" id="tuesday" @click="pickDay($event)" :disabled="inputEdit">
                <!-- <div v-for="item in (weekData.weekDates[1].split('/'))" v-bind:key="item">
                     <div>{{item}}</div>
                 </div>-->
@@ -41,7 +41,7 @@
                     {{item}}
                 </div>
             </div>
-            <div class="day" id="wednesday" @click="pickDay($event)">
+            <div class="day" id="wednesday" @click="pickDay($event)" :disabled="inputEdit">
                <!-- <div v-for="item in (weekData.weekDates[2].split('/'))" v-bind:key="item">
                     <div>{{item}}</div>
                 </div>-->
@@ -51,7 +51,7 @@
                     {{item}}
                 </div>
             </div>
-            <div class="day" id="thursday" @click="pickDay($event)">
+            <div class="day" id="thursday" @click="pickDay($event)" :disabled="inputEdit">
                 <!--<div v-for="item in (weekData.weekDates[3].split('/'))" v-bind:key="item">
                     <div>{{item}}</div>
                 </div>-->
@@ -61,7 +61,7 @@
                     {{item}}
                 </div>
             </div>
-            <div class="day" id="friday" @click="pickDay($event)">
+            <div class="day" id="friday" @click="pickDay($event)" :disabled="inputEdit">
                <!-- <div v-for="item in (weekData.weekDates[4].split('/'))" v-bind:key="item">
                     <div>{{item}}</div>
                 </div>-->
@@ -71,7 +71,7 @@
                     {{item}}
                 </div>
             </div>
-            <div class="day" id="saturday" @click="pickDay($event)">
+            <div class="day" id="saturday" @click="pickDay($event)" :disabled="inputEdit">
                 <!--<div v-for="item in (weekData.weekDates[5].split('/'))" v-bind:key="item">
                     <div>{{item}}</div>
                 </div>-->
@@ -81,7 +81,7 @@
                     {{item}}
                 </div>
             </div>
-            <div class="day" id="sunday" @click="pickDay($event)">
+            <div class="day" id="sunday" @click="pickDay($event)" :disabled="inputEdit">
                 <!--<div v-for="item in (weekData.weekDates[6].split('/'))" v-bind:key="item">
                     <div>{{item}}</div>
                 </div>-->
@@ -124,7 +124,7 @@
 -->
 
             <div id="worked" v-for="(item, index) in selectedWeek" v-bind:key="item.salaryDate">
-                <worked-day :date="selectedWeek[index]" @remove="gettingWeekInfo" @refresh="gettingWeekInfo"></worked-day>
+                <worked-day :date="selectedWeek[index]" @remove="gettingWeekInfo" @refresh="gettingWeekInfo" @edit="editing" ></worked-day>
 
             </div>
                 <!--<li><div class="card">
@@ -160,7 +160,7 @@
                 <div>TOTAL: {{item.salaryIncome}}</div>
                 <button>edit</button> <button>erase</button></li>-->
         </div>
-        <div class="centered-element" v-show="false">
+      <!--  <div class="centered-element" v-show="inputEdit">
         <div class="card">
             <header class="card-header">
                 <p class="card-header-title">
@@ -185,10 +185,70 @@
             </div>
             <footer class="card-footer">
                 <a class="card-footer-item" @click="calcDay">Save</a>
-                <a class="card-footer-item">Cancel</a>
+                <a class="card-footer-item" @click="cancelInputEdit">Cancel</a>
             </footer>
         </div>
+        </div>-->
+
+        <div class="modal is-active" v-show="input">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">{{workDate}}</p>
+                    <button class="delete" aria-label="close"></button>
+                </header>
+                <section class="modal-card-body">
+
+                    <div class="card-content">
+                        <div class="content">
+                            <li><span> {{workDate}} : DAY WORKED</span></li>
+                            <li><span> {{projectCode}} : PROJECT CODE</span></li>
+                            <li><input type="number" min="0" v-model="priceHour"><span> : PRICE PER WORKED HOUR</span></li>
+                            <li><input type="number" min="0" v-model="workedHours"> : WORKED HOURS</li>
+                            <li><span>{{daySalary}}</span><span> DAY INCOME</span></li>
+                            <li><span>{{prevent}}</span></li>
+                            <br>
+                        </div>
+                    </div>
+                    <!-- Content ... -->
+                </section>
+                <footer class="modal-card-foot">
+                    <button class="button is-success" @click="calcDay">Save changes</button>
+                    <button class="button" @click="cancelInput">Cancel</button>
+                </footer>
+            </div>
         </div>
+
+        <div class="modal is-active" v-show="edit">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">{{workDate}}</p>
+                    <button class="delete" aria-label="close"></button>
+                </header>
+                <section class="modal-card-body">
+
+                    <div class="card-content">
+                        <div class="content">
+                            <li><span> {{workDate}} : DAY WORKED</span></li>
+                            <li><span> {{projectCode}} : PROJECT CODE</span></li>
+                            <li><input type="number" min="0" v-model="priceHour"><span> : PRICE PER WORKED HOUR</span></li>
+                            <li><input type="number" min="0" v-model="workedHours"> : WORKED HOURS</li>
+                            <li><span>{{daySalary}}</span><span> DAY INCOME</span></li>
+                            <li><span>{{prevent}}</span></li>
+                            <br>
+                        </div>
+                    </div>
+                    <!-- Content ... -->
+                </section>
+                <footer class="modal-card-foot">
+                    <button class="button is-success" @click="change">Save changes</button>
+                    <button class="button" @click="cancelEdit">Cancel</button>
+                </footer>
+            </div>
+        </div>
+
+
         <ul id="addDay">
            <!-- <div class="field">
                 <label class="label">Name</label>
@@ -254,6 +314,9 @@
                 selectedWeek:[],
                 prevent:"",
                 picked:"",
+                input: false,
+                edit: false,
+                editId: "",
                 weekData:{
                     today: new Date(),
                     weekDays:['monday','tuesday','wednesday', 'thursday', 'friday','saturday','sunday'],
@@ -353,23 +416,32 @@
                 return this.priceHour * this.workedHours
             }
         },
+        watch:{
+            input: function (){
+                this.gettingWeekInfo()
+            },
+            edit: function(){
+                this.gettingWeekInfo()
+            }
+        },
         methods:{
             calcDay: function() {
+
                 if(this.workDate == "" && this.projectCode == "" && this.priceHour != 479 && this.workedHours == "" ){
-                    this.prevent = "Please enter working day information"
+                    alert( "Please enter working day information")
                 }
 
                else if (this.workDate == "" || this.workDate == null) {
-                    this.prevent = "Please enter a schedualed worked date"
+                    alert("Please enter a schedualed worked date")
                 }
                 else if (this.projectCode == "" || this.projectCode == null) {
-                    this.prevent = "Please enter working date project code"
+                    alert("Please enter working date project code")
                 }
                  else if (this.priceHour != 479 || this.priceHour == 0 || this.priceHour == null) {
-                    this.prevent = "Please enter correct hour fare"
+                    alert("Please enter correct hour fare")
                 }
                 else if (this.workedHours == "" || this.workedHours == 0 || this.workedHours == null) {
-                    this.prevent = "Please enter an amount of hours worked"
+                    alert("Please enter an amount of hours worked")
                 } else {
                     var day = {
                         salaryUserId: this.user[0].usersId,
@@ -403,10 +475,67 @@
                     this.gettingWeekInfo();
                     this.workedDays.push(day);
                     this.workDate = "";
-                    this.projectCode = "";
+                    // this.projectCode = "";
                     this.priceHour = 479;
                     this.workedHours = "";
+                    this.input = false;
                 }
+            },
+            editing: function(data){
+                this.editId = data.salaryId;
+                this.workDate = data.salaryDate;
+                this.projectCode = data.salaryProject;
+                this.priceHour = data.salaryHourFare
+                this.workedHours = data.salaryWorkedHours;
+                this.edit = true;
+
+            },
+            change: function() {
+                if(this.workDate == "" && this.projectCode == "" && this.priceHour != 479 && this.workedHours == "" ){
+                    alert( "Please enter working day information")
+                }
+
+                else if (this.workDate == "" || this.workDate == null) {
+                    alert("Please enter a schedualed worked date")
+                }
+                else if (this.projectCode == "" || this.projectCode == null) {
+                    alert("Please enter working date project code")
+                }
+                else if (this.priceHour != 479 || this.priceHour == 0 || this.priceHour == null) {
+                    alert("Please enter correct hour fare")
+                }
+                else if (this.workedHours == "" || this.workedHours == 0 || this.workedHours == null) {
+                    alert("Please enter an amount of hours worked")
+                } else {
+
+                fetch('http://127.0.0.1:3000/api/salary/' + this.editId, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        salaryUserId: this.user[0].usersId,
+                        salaryDate: this.workDate,
+                        salaryProject: this.projectCode,
+                        salaryHourFare: this.priceHour,
+                        salaryWorkedHours: this.workedHours,
+                        salaryIncome: this.priceHour * this.workedHours
+                    }),
+                }).then(response => response.json())
+                    .then(data => {
+                        console.log('Success PUT:', data);
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+                this.gettingWeekInfo();
+                this.workDate = "";
+                this.projectCode = "";
+                this.priceHour = 479;
+                this.workedHours = "";
+                this.edit = false;
+
+            }
             },
             getPeriod: function(){
                 console.log("getPeriod called")
@@ -677,46 +806,71 @@
                 }
 
             },
-            pickDay:function(event){
-                var targetId = event.currentTarget.id;
-                console.log("clicked day: "+ targetId);
-                switch(event.currentTarget.id ){
-                    case "monday" : this.workDate = this.formatDate(this.weekData.rawDates[0]);
+            pickDay:function(event) {
+                if (this.projectCode != ""){
+                    var targetId = event.currentTarget.id;
+                console.log("clicked day: " + targetId);
+                this.input = true;
+                switch (event.currentTarget.id) {
+                    case "monday" :
+                        this.workDate = this.formatDate(this.weekData.rawDates[0]);
                         this.gettingDayInfo(0);
                         this.gettingWeekInfo();
                         this.picked = 0;
                         break;
-                    case "tuesday" : this.workDate = this.formatDate(this.weekData.rawDates[1]);
+                    case "tuesday" :
+                        this.workDate = this.formatDate(this.weekData.rawDates[1]);
                         this.gettingDayInfo(1);
                         this.gettingWeekInfo();
                         this.picked = 1;
                         break;
-                    case "wednesday" : this.workDate = this.formatDate(this.weekData.rawDates[2]);
+                    case "wednesday" :
+                        this.workDate = this.formatDate(this.weekData.rawDates[2]);
                         this.gettingDayInfo(2);
                         this.gettingWeekInfo();
                         this.picked = 2;
                         break;
-                    case "thursday" : this.workDate = this.formatDate(this.weekData.rawDates[3]);
+                    case "thursday" :
+                        this.workDate = this.formatDate(this.weekData.rawDates[3]);
                         this.gettingDayInfo(3);
                         this.gettingWeekInfo();
                         this.picked = 3;
                         break;
-                    case "friday" : this.workDate = this.formatDate(this.weekData.rawDates[4]);
+                    case "friday" :
+                        this.workDate = this.formatDate(this.weekData.rawDates[4]);
                         this.gettingDayInfo(4);
                         this.gettingWeekInfo();
                         this.picked = 4;
                         break;
-                    case "saturday" : this.workDate = this.formatDate(this.weekData.rawDates[5]);
+                    case "saturday" :
+                        this.workDate = this.formatDate(this.weekData.rawDates[5]);
                         this.gettingDayInfo(5);
                         this.gettingWeekInfo();
                         this.picked = 5;
                         break;
-                    case "sunday" : this.workDate = this.formatDate(this.weekData.rawDates[6]);
+                    case "sunday" :
+                        this.workDate = this.formatDate(this.weekData.rawDates[6]);
                         this.gettingDayInfo(6);
                         this.gettingWeekInfo();
                         this.picked = 6;
                         break;
                 }
+            } else if (this.projectCode == ""){
+                    alert("Please enter a Project Code")
+                }
+        },
+            cancelInput: function(){
+                this.input = false;
+                this.workDate = null;
+                this.workedHours = "";
+
+            },
+            cancelEdit: function(){
+                this.edit = false;
+                this.workDate = null;
+                this.priceHour = 479;
+                this.workedHours = "";
+                this.projectCode = "";
 
             },
             gettingDayInfo: function(n){
@@ -748,7 +902,7 @@
                     })
 
             },
-            gettingWeekInfo: function(){
+            gettingWeekInfo:  async function(){
                 let url = new URL('http://127.0.0.1:3000/api/salary/period')
                 let params = {
                     id: this.user[0].usersId,
