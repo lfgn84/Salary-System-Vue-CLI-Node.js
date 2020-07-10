@@ -17,6 +17,10 @@
                     {{ option.project }}
                 </option>
             </select>
+                <div>
+                    <label for="checkbox"><span style="font-weight: bold"> Week locked : </span>{{ lockedWeek }}</label>
+                    <input type="checkbox" id="checkbox" v-model="lockedWeek">
+                </div>
 
             </div>
         </div>
@@ -124,9 +128,11 @@
 -->
 
             <div id="worked" v-for="(item, index) in selectedWeek" v-bind:key="item.salaryDate">
-                <worked-day :date="selectedWeek[index]" @remove="gettingWeekInfo" @refresh="gettingWeekInfo" @edit="editing" ></worked-day>
+                <worked-day :date="selectedWeek[index]" :locked="lockedWeek" @remove="removing++" @edit="editing" ></worked-day>
 
             </div>
+
+
                 <!--<li><div class="card">
                     <header class="card-header">
                         <p class="card-header-title">
@@ -160,6 +166,7 @@
                 <div>TOTAL: {{item.salaryIncome}}</div>
                 <button>edit</button> <button>erase</button></li>-->
         </div>
+
       <!--  <div class="centered-element" v-show="inputEdit">
         <div class="card">
             <header class="card-header">
@@ -194,18 +201,18 @@
             <div class="modal-background"></div>
             <div class="modal-card">
                 <header class="modal-card-head">
-                    <p class="modal-card-title">{{workDate}}</p>
+                    <p class="modal-card-title">Register new worked day</p>
                     <button class="delete" aria-label="close"></button>
                 </header>
                 <section class="modal-card-body">
 
                     <div class="card-content">
                         <div class="content">
-                            <li><span> {{workDate}} : DAY WORKED</span></li>
-                            <li><span> {{projectCode}} : PROJECT CODE</span></li>
-                            <li><input type="number" min="0" v-model="priceHour"><span> : PRICE PER WORKED HOUR</span></li>
-                            <li><input type="number" min="0" v-model="workedHours"> : WORKED HOURS</li>
-                            <li><span>{{daySalary}}</span><span> DAY INCOME</span></li>
+                            <li> {{workDate}}<span style="font-weight: bold"> : DAY WORKED</span></li>
+                            <li> {{projectCode}} <span style="font-weight: bold"> : PROJECT CODE</span></li>
+                            <li><input type="number" min="0" v-model="priceHour"><span style="font-weight: bold"> : PRICE PER WORKED HOUR</span></li>
+                            <li><input type="number" min="0" v-model="workedHours"><span style="font-weight: bold"> : WORKED HOURS</span></li>
+                            <li><span>{{daySalary}}</span><span style="font-weight: bold"> DAY INCOME</span></li>
                             <li><span>{{prevent}}</span></li>
                             <br>
                         </div>
@@ -223,18 +230,18 @@
             <div class="modal-background"></div>
             <div class="modal-card">
                 <header class="modal-card-head">
-                    <p class="modal-card-title">{{workDate}}</p>
+                    <p class="modal-card-title">Edit worked day</p>
                     <button class="delete" aria-label="close"></button>
                 </header>
                 <section class="modal-card-body">
 
                     <div class="card-content">
                         <div class="content">
-                            <li><span> {{workDate}} : DAY WORKED</span></li>
-                            <li><span> {{projectCode}} : PROJECT CODE</span></li>
-                            <li><input type="number" min="0" v-model="priceHour"><span> : PRICE PER WORKED HOUR</span></li>
-                            <li><input type="number" min="0" v-model="workedHours"> : WORKED HOURS</li>
-                            <li><span>{{daySalary}}</span><span> DAY INCOME</span></li>
+                            <li> {{workDate}}<span style="font-weight: bold"> : DAY WORKED</span></li>
+                            <li> {{projectCode}} <span style="font-weight: bold"> : PROJECT CODE</span></li>
+                            <li><input type="number" min="0" v-model="priceHour"><span style="font-weight: bold"> : PRICE PER WORKED HOUR</span></li>
+                            <li><input type="number" min="0" v-model="workedHours"><span style="font-weight: bold"> : WORKED HOURS</span></li>
+                            <li><span>{{daySalary}}</span><span style="font-weight: bold"> DAY INCOME</span></li>
                             <li><span>{{prevent}}</span></li>
                             <br>
                         </div>
@@ -249,7 +256,7 @@
         </div>
 
 
-        <ul id="addDay">
+        <ul id="addDay" v-show="false">
            <!-- <div class="field">
                 <label class="label">Name</label>
                 <div class="control">
@@ -317,6 +324,9 @@
                 input: false,
                 edit: false,
                 editId: "",
+                removing: 0,
+                beforeProject: "",
+                lockedWeek:false,
                 weekData:{
                     today: new Date(),
                     weekDays:['monday','tuesday','wednesday', 'thursday', 'friday','saturday','sunday'],
@@ -422,6 +432,9 @@
             },
             edit: function(){
                 this.gettingWeekInfo()
+            },
+            removing: function(){
+                this.gettingWeekInfo()
             }
         },
         methods:{
@@ -482,10 +495,11 @@
                 }
             },
             editing: function(data){
+                this.beforeProject = JSON.parse(JSON.stringify(this.projectCode));
                 this.editId = data.salaryId;
                 this.workDate = data.salaryDate;
                 this.projectCode = data.salaryProject;
-                this.priceHour = data.salaryHourFare
+                this.priceHour = data.salaryHourFare;
                 this.workedHours = data.salaryWorkedHours;
                 this.edit = true;
 
@@ -530,10 +544,11 @@
                     });
                 this.gettingWeekInfo();
                 this.workDate = "";
-                this.projectCode = "";
+                this.projectCode = JSON.parse(JSON.stringify(this.beforeProject));
                 this.priceHour = 479;
                 this.workedHours = "";
                 this.edit = false;
+                this.beforeProject = "";
 
             }
             },
@@ -870,7 +885,8 @@
                 this.workDate = null;
                 this.priceHour = 479;
                 this.workedHours = "";
-                this.projectCode = "";
+                this.projectCode = this.beforeProject;
+                this.beforeProject = "";
 
             },
             gettingDayInfo: function(n){

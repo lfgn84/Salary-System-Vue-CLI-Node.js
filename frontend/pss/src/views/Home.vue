@@ -15,7 +15,7 @@ export default {
     users,
 
   },
-  data:function(){
+  data: function(){
     return{
       email:""
     }

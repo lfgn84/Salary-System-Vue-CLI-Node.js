@@ -12,12 +12,18 @@
             <li><p1>PN: </p1><p2>{{user[0].usersPN}}</p2></li>
             <li><p1>e-mail: </p1><p2>{{user[0].usersEmail}}</p2></li>
             <li><p1>PSS id: </p1><p2>{{user[0].usersId}}</p2></li>
-            <li><p1>Income Pot: </p1> <p2 id="pot">{{pot[0].pot}} kr</p2></li>
+            <li><p1>Income Pot: </p1> <p2 id="pot">{{pot[0].pot.toLocaleString('en-US')}} kr</p2></li>
             <li>
                 <router-link class="button is-medium"
                         :to="{name:'LogIn'}" @click="logOut"> Log Out
                 </router-link>
 <!--                <button class="button is-medium" @click="logOut">Log Out</button>-->
+            </li>
+            <li>
+                <router-link class="button is-medium"
+                             :to="{name:'salaryInfo', params:{user: this.user[0]}}"> User's salary information
+                </router-link>
+                <!--                <button class="button is-medium" @click="logOut">Log Out</button>-->
             </li>
         </ul>
         </div>

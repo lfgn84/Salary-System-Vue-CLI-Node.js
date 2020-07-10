@@ -10,7 +10,7 @@
         <button class="logbutton" v-on:click="checkLog" v-on:keyup.enter="checkLog" v-show="!success">LOG IN</button>
 <!--        <button class="accessbutton" v-show="success" v-on:click="accessSuccess" v-on:keyup.enter="accessSuccess"> IN TO PSS</button>-->
         <router-link
-                :to="{name:'Home', params:{mail : inputMail, } }" v-show="success" class="accessbutton" tag="button" > IN TO PSS
+                :to="{name:'Home', params:{mail : inputMail } }" v-show="success" class="accessbutton" tag="button" > IN TO PSS
         </router-link>
     </div>
 </template>
