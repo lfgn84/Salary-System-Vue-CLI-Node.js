@@ -480,6 +480,37 @@ app.patch("/api/salary/lock", (req, res, next) => {
 
     })
 });
+app.patch("/api/salary/unlock", (req, res, next) => {
+    var errors = []
+    var data = {
+        salaryUserLocked : req.body.salaryUserLocked,
+        startDate: req.body.startDate,
+        endDate : req.body.endDate,
+        salaryUserId : req.body.salaryUserId
+    };
+    var params = [
+        data.salaryUserLocked,
+        data.startDate,
+        data.endDate,
+        data.salaryUserId];
+    var sql = `UPDATE salary SET
+                salaryUserLocked = ?
+                where (salaryDate between ? and ? ) and salaryUserId = ?`
+    console.log( data.startDate + ' ' + data.endDate+ ' ' + data.salaryUserLocked + ' ' + data.salaryUserId);
+    salarydb.run(sql, params, function (err, result) {
+        if (err) {
+            res.status(400).json({"error": err.message})
+            return;
+        }
+        res.json({
+            "message": "success",
+            "salary": data,
+            "id": this.lastID
+        })
+
+    })
+});
+
 // Root path
 app.get("/", (req, res, next) => {
     res.json({"message": "Ok"})

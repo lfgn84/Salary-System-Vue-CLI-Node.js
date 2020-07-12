@@ -46,11 +46,12 @@
         data(){
             return{
                 dayInfo: "",
-                locked:false
+                locked:""
             }
         },
         created(){
           this.dayInfo = JSON.parse(JSON.stringify(this.date));
+            this.locked = this.dayInfo.salaryUserLocked;
         },
         watch:{
             date: function(){

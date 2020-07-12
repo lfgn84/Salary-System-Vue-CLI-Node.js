@@ -128,7 +128,7 @@
 -->
 
             <div id="worked" v-for="(item, index) in selectedWeek" v-bind:key="item.salaryDate">
-                <worked-day :date="selectedWeek[index]"  @remove="removing++" @edit="editing" ></worked-day>
+                <worked-day :date="selectedWeek[index]"  @remove="erase" @edit="editing"></worked-day>
 
             </div>
 
@@ -166,43 +166,44 @@
                 <div>TOTAL: {{item.salaryIncome}}</div>
                 <button>edit</button> <button>erase</button></li>-->
         </div>
-        <button class="button is-medium" @click="lockWeek">Lock Week</button>
-      <!--  <div class="centered-element" v-show="inputEdit">
-        <div class="card">
-            <header class="card-header">
-                <p class="card-header-title">
-                    Register worked day
-                </p>
-                <a href="#" class="card-header-icon" aria-label="more options">
-      <span class="icon">
-        <i class="fas fa-angle-down" aria-hidden="true"></i>
-      </span>
-                </a>
-            </header>
-            <div class="card-content">
-                <div class="content">
-                    <li><span> {{workDate}} : DAY WORKED</span></li>
-                    <li><span> {{projectCode}} : PROJECT CODE</span></li>
-                    <li><input type="number" min="0" v-model="priceHour"><span> : PRICE PER WORKED HOUR</span></li>
-                    <li><input type="number" min="0" v-model="workedHours"> : WORKED HOURS</li>
-                    <li><span>{{daySalary}}</span><span> DAY INCOME</span></li>
-                    <li><span>{{prevent}}</span></li>
-                    <br>
-                </div>
-            </div>
-            <footer class="card-footer">
-                <a class="card-footer-item" @click="calcDay">Save</a>
-                <a class="card-footer-item" @click="cancelInputEdit">Cancel</a>
-            </footer>
-        </div>
-        </div>-->
+        <button v-bind:class="{'button is-medium': !lockedWeek, 'button is-medium is-inverted is-outlined' : lockedWeek}" :disabled="lockedWeek"  @click="lockWeek">Lock Week</button>
+        <button class="button is-medium" @click="unlockWeek">Unlock Week</button>
+
+        <!--  <div class="centered-element" v-show="inputEdit">
+          <div class="card">
+              <header class="card-header">
+                  <p class="card-header-title">
+                      Register worked day
+                  </p>
+                  <a href="#" class="card-header-icon" aria-label="more options">
+        <span class="icon">
+          <i class="fas fa-angle-down" aria-hidden="true"></i>
+        </span>
+                  </a>
+              </header>
+              <div class="card-content">
+                  <div class="content">
+                      <li><span> {{workDate}} : DAY WORKED</span></li>
+                      <li><span> {{projectCode}} : PROJECT CODE</span></li>
+                      <li><input type="number" min="0" v-model="priceHour"><span> : PRICE PER WORKED HOUR</span></li>
+                      <li><input type="number" min="0" v-model="workedHours"> : WORKED HOURS</li>
+                      <li><span>{{daySalary}}</span><span> DAY INCOME</span></li>
+                      <li><span>{{prevent}}</span></li>
+                      <br>
+                  </div>
+              </div>
+              <footer class="card-footer">
+                  <a class="card-footer-item" @click="calcDay">Save</a>
+                  <a class="card-footer-item" @click="cancelInputEdit">Cancel</a>
+              </footer>
+          </div>
+          </div>-->
 
         <div class="modal is-active" v-show="input">
             <div class="modal-background"></div>
             <div class="modal-card">
                 <header class="modal-card-head">
                     <p class="modal-card-title">Register new worked day</p>
-                    <button class="delete" aria-label="close"></button>
                 </header>
                 <section class="modal-card-body">
 
@@ -231,7 +232,6 @@
             <div class="modal-card">
                 <header class="modal-card-head">
                     <p class="modal-card-title">Edit worked day</p>
-                    <button class="delete" aria-label="close"></button>
                 </header>
                 <section class="modal-card-body">
 
@@ -324,9 +324,9 @@
                 input: false,
                 edit: false,
                 editId: "",
-                removing: 0,
                 beforeProject: "",
-                lockedWeek:false,
+                refreshWeek: 0,
+                lockedWeek: false,
                 weekData:{
                     today: new Date(),
                     weekDays:['monday','tuesday','wednesday', 'thursday', 'friday','saturday','sunday'],
@@ -429,17 +429,27 @@
                 return this.priceHour * this.workedHours
             }
         },
-        watch:{
-            input: function (){
+        watch: {
+            input: function () {
                 this.gettingWeekInfo()
             },
-            edit: function(){
+            edit: function () {
                 this.gettingWeekInfo()
             },
-            removing: function(){
+            refreshWeek: function () {
                 this.gettingWeekInfo()
+                if(this.refreshWeek > 6){
+                    this.refreshWeek = 0
+                }
             }
-        },
+
+
+           /*
+            select: function(){
+                this.gettingWeekInfo()
+
+        }*/
+    },
         methods:{
             calcDay: function() {
 
@@ -497,6 +507,7 @@
                     this.priceHour = 479;
                     this.workedHours = "";
                     this.input = false;
+                    this.refreshWeek++
                 }
             },
             editing: function(data){
@@ -554,11 +565,16 @@
                 this.workedHours = "";
                 this.edit = false;
                 this.beforeProject = "";
+                this.refreshWeek++
 
             }
             },
+            erase: function(){
+                this.gettingWeekInfo()
+                this.refreshWeek++
+            },
             lockWeek: function(){
-                if(confirm(" Are you sure you want to lock regitered week ? Once you have locked a week you cannot make new changes on that week.")){
+                if(confirm(" Are you sure you want to lock registered week ? Once you have locked a week you cannot make new changes on that week.")){
                 fetch('http://127.0.0.1:3000/api/salary/lock', {
                     method: 'PATCH',
                     headers: {
@@ -578,6 +594,31 @@
                         console.error('Error:', error);
                     });
                 this.gettingWeekInfo();
+                this.refreshWeek++;
+                }
+            },
+            unlockWeek: function(){
+                if(confirm(" Are you sure you want to unlock registered  locked week ? ")){
+                    fetch('http://127.0.0.1:3000/api/salary/lock', {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            salaryUserLocked: false,
+                            startDate: this.formatDate(this.weekData.rawDates[0]),
+                            endDate: this.formatDate(this.weekData.rawDates[6]),
+                            salaryUserId: this.user[0].usersId
+                        }),
+                    }).then(response => response.json())
+                        .then(data => {
+                            console.log('Success PUT:', data);
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                        });
+                    this.gettingWeekInfo();
+                    this.refreshWeek++;
                 }
             },
             getPeriod: function(){
@@ -946,7 +987,7 @@
                     })
 
             },
-            gettingWeekInfo:  async function(){
+            gettingWeekInfo: function(){
                 let url = new URL('http://127.0.0.1:3000/api/salary/period')
                 let params = {
                     id: this.user[0].usersId,
@@ -1019,7 +1060,7 @@
     .content{
         list-style-type: none;
         padding-left: 30px;
-        font-size: 40px;
+        font-size: 30px;
     }
     li{
         text-align: left;

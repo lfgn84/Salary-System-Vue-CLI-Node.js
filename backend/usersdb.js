@@ -18,7 +18,7 @@ let usersdb = new sqlite3.Database(DBSOURCE, (err) => {
             usersPN TEXT,
             usersEmail TEXT,
             usersPhone TEXT,
-            usersHiringDate TEXT,
+            usersHiringDate DATE,
             usersProjectName TEXT,
             usersFirstCostumer TEXT,
             usersLastCostumer TEXT,
@@ -67,9 +67,9 @@ let usersdb = new sqlite3.Database(DBSOURCE, (err) => {
                 usersLaptop,
                 usersMiscHardware,
                 usersMisc) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
-                usersdb.run(insert, [0, "user", "Luis", "Gutierrez", "841026", "lfgn84@gmail.com", "0703487596", "26/03/2020", "PSS", "Prodeff", "Prodeff", 500, 0.65, 20000, 0.33, 0.12, 0, 0, 0.33, 0, 0, 0, 0, 0, 0])
-                usersdb.run(insert, [1, "owner", "Allen", "Kalasho", "921026", "allen@prodeff.com", "078976662", "12/08/2015", "PSS", "Volvo Cars", "Stena Lines", 500, 0.80, 60000, 0.33, 0.12, 0, 0, 0.33, 0, 0, 0, 0, 0, 0])
-
+                usersdb.run(insert, [0, "user", "Luis", "Gutierrez", "841026", "lfgn84@gmail.com", "0703487596", "2020-03-26", "PSS", "Prodeff", "Prodeff", 478, 0.65, 20000, 0.3142, 0.12, 0, 0, 0.33, 0, 0, 0, 0, 0, 0])
+                usersdb.run(insert, [1, "owner", "Allen", "Kalasho", "921026", "allen@prodeff.com", "078976662", "2015-08-12", "PSS", "Volvo Cars", "Stena Line", 478, 0.80, 60000, 0.3142, 0.12, 0, 0, 0.33, 0, 0, 0, 0, 0, 0])
+                usersdb.run(insert, [2, "admin", "Clara", "Löfgren", "950512", "clara@prodeff.com", "071234567", "2019-02-19", "Volvo Cars", "Volvo Cars", "Stena Line", 478, 0.75, 40000, 0.3142, 0.12, 0, 0, 0.33, 0, 0, 0, 0, 0, 0])
             }
         })
     }
