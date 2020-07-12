@@ -17,7 +17,9 @@ let salarydb = new sqlite3.Database(DBSOURCE, (err) => {
             salaryProject TEXT,
             salaryHourFare INT,
             salaryWorkedHours INT,
-            salaryIncome INT
+            salaryIncome INT,
+            salaryUserLocked BOOLEAN,
+            salaryAdminLocked BOOLEAN
             )`, (err) => {
             if (err) {
                 // Table already created
@@ -29,9 +31,11 @@ let salarydb = new sqlite3.Database(DBSOURCE, (err) => {
                 salaryProject,
                 salaryHourFare,
                 salaryWorkedHours,
-                SalaryIncome
-                ) VALUES (?,?,?,?,?,?)`
-                salarydb.run(insert, [0, "2020-03-26","PSS", 478, 8, 3824])
+                salaryIncome,
+                salaryUserLocked,
+                salaryAdminLocked
+                ) VALUES (?,?,?,?,?,?,?,?)`
+                salarydb.run(insert, [0, "2020-03-26","PSS", 478, 8, 3824, false, false])
             }
         })
     }

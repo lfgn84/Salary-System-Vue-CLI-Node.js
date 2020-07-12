@@ -52,6 +52,8 @@
                                 </router-link>
                                 <!--                <button class="button is-medium" @click="logOut">Log Out</button>-->
                             </li>
+                            <li><button class="button is-medium" v-show="user.usersRange == 'owner'">Create a user</button></li>
+                            <li><button class="button is-medium" v-show="user.usersRange == 'owner'">Checkout User</button></li>
                         </ul>
                     </h2>
                 </div>
@@ -119,9 +121,10 @@
             var url = new URL('http://127.0.0.1:3000/api/salary/period')
             var params = {
                 id: this.user.usersId,
-                startDay: '2020-03-26',//this.user.usersHiringDate,
-                endDay: '2020-07-10'
+                startDay: '2020-03-26', // this.formatDate(this.user.usersHiringDate),//this.user.usersHiringDate,
+                endDay: '2020-07-12'//this.formatDate(new Date())
             };
+            console.log(params)
             url.search = new URLSearchParams(params).toString()
 
             fetch(url)
@@ -158,7 +161,20 @@
                     });
 
 
-            }
+            },
+            formatDate:function (date) {
+                var d = new Date(date),
+                    month = '' + (d.getMonth() + 1),
+                    day = '' + d.getDate(),
+                    year = d.getFullYear();
+
+                if (month.length < 2)
+                    month = '0' + month;
+                if (day.length < 2)
+                    day = '0' + day;
+
+                return [year, month, day].join('-');
+            },
         }
     }
 </script>

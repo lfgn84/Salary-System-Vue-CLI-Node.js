@@ -372,7 +372,9 @@ app.post("/api/salary", (req, res, next) => {
         salaryProject: req.body.salaryProject,
         salaryHourFare: req.body.salaryHourFare,
         salaryWorkedHours: req.body.salaryWorkedHours,
-        salaryIncome: req.body.salaryIncome
+        salaryIncome: req.body.salaryIncome,
+        salaryUserLocked: req.body.salaryUserLocked,
+        salaryAdminLocked: req.body.salaryAdminLocked
     };
     var sql = `INSERT INTO salary (
                 salaryUserId,
@@ -380,14 +382,19 @@ app.post("/api/salary", (req, res, next) => {
                 salaryProject,
                 salaryHourFare,
                 salaryWorkedHours,
-                SalaryIncome
-                ) VALUES (?,?,?,?,?,?)`
+                salaryIncome,
+                salaryUserLocked,
+                salaryAdminLocked
+                ) VALUES (?,?,?,?,?,?,?,?)`
     var params = [data.salaryUserId,
                   data.salaryDate,
                   data.salaryProject,
                   data.salaryHourFare,
                   data.salaryWorkedHours,
-                  data.salaryIncome]
+                  data.salaryIncome,
+                  data.salaryUserLocked,
+                  data.salaryAdminLocked
+    ]
     salarydb.run(sql, params, function (err, result) {
         if (err) {
             res.status(400).json({"error": err.message})
@@ -430,6 +437,36 @@ app.put("/api/salary/:id", (req, res, next) => {
                 salaryWorkedHours = ?,
                 salaryIncome = ?
                 where salaryId = ?`
+    salarydb.run(sql, params, function (err, result) {
+        if (err) {
+            res.status(400).json({"error": err.message})
+            return;
+        }
+        res.json({
+            "message": "success",
+            "salary": data,
+            "id": this.lastID
+        })
+
+    })
+});
+app.patch("/api/salary/lock", (req, res, next) => {
+    var errors = []
+    var data = {
+        salaryUserLocked : req.body.salaryUserLocked,
+        startDate: req.body.startDate,
+        endDate : req.body.endDate,
+        salaryUserId : req.body.salaryUserId
+    };
+    var params = [
+        data.salaryUserLocked,
+        data.startDate,
+        data.endDate,
+        data.salaryUserId];
+    var sql = `UPDATE salary SET
+                salaryUserLocked = ?
+                where (salaryDate between ? and ? ) and salaryUserId = ?`
+    console.log( data.startDate + ' ' + data.endDate+ ' ' + data.salaryUserLocked + ' ' + data.salaryUserId);
     salarydb.run(sql, params, function (err, result) {
         if (err) {
             res.status(400).json({"error": err.message})

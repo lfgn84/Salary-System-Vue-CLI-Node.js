@@ -5,11 +5,11 @@
 
         <div class="week">
         <div class="arrows">
-            <button class="button is-medium" id="arrow1" @click="backWeek" :disabled="inputEdit">Back Week</button>
+            <button class="button is-medium" id="arrow1" @click="backWeek" :disabled="input || edit">Back Week</button>
             <div class="separator"></div>
-            <button class="button is-medium" id="arrow2" @click="forwardWeek" :disabled="inputEdit">Forward Week</button>
+            <button class="button is-medium" id="arrow2" @click="forwardWeek" :disabled="input || edit">Forward Week</button>
             <div class="separator"></div>
-            <button class="button is-medium" id="arrow3" @click="todaysWeek" :disabled="inputEdit">Today's Week</button>
+            <button class="button is-medium" id="arrow3" @click="todaysWeek" :disabled="input || edit">Today's Week</button>
             <div></div>
             <div>
             <span style="font-weight: bold; font-size: 15px">Project: </span> <select v-model="projectCode">
@@ -24,7 +24,7 @@
 
             </div>
         </div>
-            <div class="day" id="monday" @click="pickDay($event)" :disabled="inputEdit">
+            <div class="day" id="monday" @click="pickDay($event)" :disabled="input || edit">
                <!-- <div v-for="index in (weekData.weekDates[0].split('/'))" v-bind:key="index">
                 <div>{{index}}</div>
                 </div>-->
@@ -35,7 +35,7 @@
                     </div>
 
             </div>
-            <div class="day" id="tuesday" @click="pickDay($event)" :disabled="inputEdit">
+            <div class="day" id="tuesday" @click="pickDay($event)" :disabled="input || edit">
                <!-- <div v-for="item in (weekData.weekDates[1].split('/'))" v-bind:key="item">
                     <div>{{item}}</div>
                 </div>-->
@@ -45,7 +45,7 @@
                     {{item}}
                 </div>
             </div>
-            <div class="day" id="wednesday" @click="pickDay($event)" :disabled="inputEdit">
+            <div class="day" id="wednesday" @click="pickDay($event)" :disabled="input || edit">
                <!-- <div v-for="item in (weekData.weekDates[2].split('/'))" v-bind:key="item">
                     <div>{{item}}</div>
                 </div>-->
@@ -55,7 +55,7 @@
                     {{item}}
                 </div>
             </div>
-            <div class="day" id="thursday" @click="pickDay($event)" :disabled="inputEdit">
+            <div class="day" id="thursday" @click="pickDay($event)" :disabled="input || edit">
                 <!--<div v-for="item in (weekData.weekDates[3].split('/'))" v-bind:key="item">
                     <div>{{item}}</div>
                 </div>-->
@@ -65,7 +65,7 @@
                     {{item}}
                 </div>
             </div>
-            <div class="day" id="friday" @click="pickDay($event)" :disabled="inputEdit">
+            <div class="day" id="friday" @click="pickDay($event)" :disabled="input || edit">
                <!-- <div v-for="item in (weekData.weekDates[4].split('/'))" v-bind:key="item">
                     <div>{{item}}</div>
                 </div>-->
@@ -75,7 +75,7 @@
                     {{item}}
                 </div>
             </div>
-            <div class="day" id="saturday" @click="pickDay($event)" :disabled="inputEdit">
+            <div class="day" id="saturday" @click="pickDay($event)" :disabled="input || edit">
                 <!--<div v-for="item in (weekData.weekDates[5].split('/'))" v-bind:key="item">
                     <div>{{item}}</div>
                 </div>-->
@@ -85,7 +85,7 @@
                     {{item}}
                 </div>
             </div>
-            <div class="day" id="sunday" @click="pickDay($event)" :disabled="inputEdit">
+            <div class="day" id="sunday" @click="pickDay($event)" :disabled="input || edit">
                 <!--<div v-for="item in (weekData.weekDates[6].split('/'))" v-bind:key="item">
                     <div>{{item}}</div>
                 </div>-->
@@ -128,7 +128,7 @@
 -->
 
             <div id="worked" v-for="(item, index) in selectedWeek" v-bind:key="item.salaryDate">
-                <worked-day :date="selectedWeek[index]" :locked="lockedWeek" @remove="removing++" @edit="editing" ></worked-day>
+                <worked-day :date="selectedWeek[index]"  @remove="removing++" @edit="editing" ></worked-day>
 
             </div>
 
@@ -166,7 +166,7 @@
                 <div>TOTAL: {{item.salaryIncome}}</div>
                 <button>edit</button> <button>erase</button></li>-->
         </div>
-
+        <button class="button is-medium" @click="lockWeek">Lock Week</button>
       <!--  <div class="centered-element" v-show="inputEdit">
         <div class="card">
             <header class="card-header">
@@ -341,6 +341,9 @@
         mounted(){
             this.gettingWeekInfo()
         },
+       /* updated(){
+            this.gettingWeekInfo()
+        },*/
         created(){
             var start = startOfWeek(this.weekData.today,{ weekStartsOn: 1 });
             var end = endOfWeek(this.weekData.today,{ weekStartsOn: 1 });
@@ -462,7 +465,9 @@
                         salaryProject: this.projectCode,
                         salaryHourFare: this.priceHour,
                         salaryWorkedHours: this.workedHours,
-                        salaryIncome: this.priceHour * this.workedHours
+                        salaryIncome: this.priceHour * this.workedHours,
+                        salaryUserLocked: false,
+                        salaryAdminLocked: false
                     }
                     fetch('http://127.0.0.1:3000/api/salary/', {
                         method: 'POST',
@@ -551,6 +556,29 @@
                 this.beforeProject = "";
 
             }
+            },
+            lockWeek: function(){
+                if(confirm(" Are you sure you want to lock regitered week ? Once you have locked a week you cannot make new changes on that week.")){
+                fetch('http://127.0.0.1:3000/api/salary/lock', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        salaryUserLocked: true,
+                        startDate: this.formatDate(this.weekData.rawDates[0]),
+                        endDate: this.formatDate(this.weekData.rawDates[6]),
+                        salaryUserId: this.user[0].usersId
+                    }),
+                }).then(response => response.json())
+                    .then(data => {
+                        console.log('Success PUT:', data);
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+                this.gettingWeekInfo();
+                }
             },
             getPeriod: function(){
                 console.log("getPeriod called")

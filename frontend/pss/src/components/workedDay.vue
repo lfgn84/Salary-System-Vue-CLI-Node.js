@@ -41,12 +41,12 @@
     export default {
         name: "worked-day",
         props:{
-            date: [Object, Array],
-            locked: Boolean
+            date: [Object, Array]
         },
         data(){
             return{
-                dayInfo: ""
+                dayInfo: "",
+                locked:false
             }
         },
         created(){
@@ -55,6 +55,7 @@
         watch:{
             date: function(){
                 this.dayInfo = JSON.parse(JSON.stringify(this.date));
+                this.locked = this.dayInfo.salaryUserLocked
             }
         },
         computed:{
