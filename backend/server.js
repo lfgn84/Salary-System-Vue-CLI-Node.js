@@ -4,6 +4,7 @@ var cors = require('cors')
 var usersdb = require("./usersdb.js")
 var passwordsdb = require("./passwordsdb.js")
 var salarydb = require("./salarydb.js")
+var lockedWeeksdb = require("./lockedWeeksdb")
 
 app.use(cors())
 app.use(express.static('public'))
@@ -510,7 +511,72 @@ app.patch("/api/salary/unlock", (req, res, next) => {
 
     })
 });
+app.get("/api/lockedWeeks/:id", (req, res, next) => {
+    var sql = "select * from lockedWeeks where lockedWeeksUserId = ?"
+    var params = [req.params.id]
+    lockedWeeksdb.all(sql, params, (err, rows) => {
+        if (err) {
+            res.status(400).json({"error": err.message});
+            return;
+        }
+        res.json({
+            "message": "success",
+            "lockedWeeks": rows
+        })
+    });
+});
+app.post("/api/lockedWeeks", (req, res, next) => {
+    var errors = []
+    var data = {
+        lockedWeeksUserId: req.body.lockedWeeksUserId,
+        lockedWeeksStartDate: req.body.lockedWeeksStartDate,
+        lockedWeeksEndDate: req.body.lockedWeeksEndDate
+    };
+    var sql = `INSERT INTO lockedWeeks (
+                lockedWeeksUserId,
+                lockedWeeksStartDate,
+                lockedWeeksEndDate
+                ) VALUES (?,?,?)`
+    var params = [data.lockedWeeksUserId,
+        data.lockedWeeksStartDate,
+        data.lockedWeeksEndDate
+    ]
+    lockedWeeksdb.run(sql, params, function (err, result) {
+        if (err) {
+            res.status(400).json({"error": err.message})
+            return;
+        }
+        res.json({
+            "message": "success",
+            "lockedWeeks": data,
+            "id": this.lastID
+        })
 
+    })
+});
+app.delete("/api/lockedWeeks", (req, res, next) => {
+    var data = {
+        lockedWeeksUserId: req.body.lockedWeeksUserId,
+        lockedWeeksStartDate: req.body.lockedWeeksStartDate,
+        lockedWeeksEndDate: req.body.lockedWeeksEndDate
+    };
+    var sql = `DELETE FROM lockedWeeks WHERE 
+                lockedWeeksUserId = ? AND
+                lockedWeeksStartDate = ? AND
+                lockedWeeksEndDate = ?
+                `
+    var params = [data.lockedWeeksUserId,
+        data.lockedWeeksStartDate,
+        data.lockedWeeksEndDate
+    ];
+    lockedWeeksdb.all(sql, params, function (err, result) {
+        if (err) {
+            res.status(400).json({"error": res.message})
+            return;
+        }
+        res.json({"message": "deleted", rows: this.changes})
+    });
+});
 // Root path
 app.get("/", (req, res, next) => {
     res.json({"message": "Ok"})

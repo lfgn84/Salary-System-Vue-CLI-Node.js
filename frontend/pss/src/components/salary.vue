@@ -12,192 +12,76 @@
             <button class="button is-medium" id="arrow3" @click="todaysWeek" :disabled="input || edit">Today's Week</button>
             <div></div>
             <div>
-            <span style="font-weight: bold; font-size: 15px">Project: </span> <select v-model="projectCode">
+            <span style="font-weight: bold; font-size: 15px">Project: </span>
+                <select v-model="projectCode">
                 <option v-for="option in projectCodes" v-bind:key="option">
                     {{ option.project }}
                 </option>
             </select>
                 <div>
-                    <label for="checkbox"><span style="font-weight: bold"> Week locked : </span>{{ lockedWeek }}</label>
-                    <input type="checkbox" id="checkbox" v-model="lockedWeek">
+                    <span v-show="lockedWeek && selectedWeek.length > 0" style="font-weight: bold"> Week locked </span>
                 </div>
-
             </div>
         </div>
-            <div class="day" id="monday" @click="pickDay($event)" :disabled="input || edit">
-               <!-- <div v-for="index in (weekData.weekDates[0].split('/'))" v-bind:key="index">
-                <div>{{index}}</div>
-                </div>-->
+            <fieldset class="day" id="monday" @click="pickDay($event)" :disabled="input || edit || lockedWeek">
                     <div v-for="(item, index) in dayItems(weekData.weekDates[0])"
                         :style="itemStyle(index)"
                         :key="index">
                         {{item}}
                     </div>
-
-            </div>
-            <div class="day" id="tuesday" @click="pickDay($event)" :disabled="input || edit">
-               <!-- <div v-for="item in (weekData.weekDates[1].split('/'))" v-bind:key="item">
-                    <div>{{item}}</div>
-                </div>-->
+            </fieldset>
+            <fieldset class="day" id="tuesday" @click="pickDay($event)" :disabled="input || edit || lockedWeek">
                 <div v-for="(item, index) in dayItems(weekData.weekDates[1])"
                      :style="itemStyle(index)"
                      :key="index">
                     {{item}}
                 </div>
-            </div>
-            <div class="day" id="wednesday" @click="pickDay($event)" :disabled="input || edit">
-               <!-- <div v-for="item in (weekData.weekDates[2].split('/'))" v-bind:key="item">
-                    <div>{{item}}</div>
-                </div>-->
+            </fieldset>
+            <fieldset class="day" id="wednesday" @click="pickDay($event)" :disabled="input || edit || lockedWeek">
                 <div v-for="(item, index) in dayItems(weekData.weekDates[2])"
                      :style="itemStyle(index)"
                      :key="index">
                     {{item}}
                 </div>
-            </div>
-            <div class="day" id="thursday" @click="pickDay($event)" :disabled="input || edit">
-                <!--<div v-for="item in (weekData.weekDates[3].split('/'))" v-bind:key="item">
-                    <div>{{item}}</div>
-                </div>-->
+            </fieldset>
+            <fieldset class="day" id="thursday" @click="pickDay($event)" :disabled="input || edit || lockedWeek">
                 <div v-for="(item, index) in dayItems(weekData.weekDates[3])"
                      :style="itemStyle(index)"
                      :key="index">
                     {{item}}
                 </div>
-            </div>
-            <div class="day" id="friday" @click="pickDay($event)" :disabled="input || edit">
-               <!-- <div v-for="item in (weekData.weekDates[4].split('/'))" v-bind:key="item">
-                    <div>{{item}}</div>
-                </div>-->
+            </fieldset>
+            <fieldset class="day" id="friday" @click="pickDay($event)" :disabled="input || edit || lockedWeek">
                 <div v-for="(item, index) in dayItems(weekData.weekDates[4])"
                      :style="itemStyle(index)"
                      :key="index">
                     {{item}}
                 </div>
-            </div>
-            <div class="day" id="saturday" @click="pickDay($event)" :disabled="input || edit">
-                <!--<div v-for="item in (weekData.weekDates[5].split('/'))" v-bind:key="item">
-                    <div>{{item}}</div>
-                </div>-->
+            </fieldset>
+            <fieldset class="day" id="saturday" @click="pickDay($event)" :disabled="input || edit || lockedWeek">
                 <div v-for="(item, index) in dayItems(weekData.weekDates[5])"
                      :style="itemStyle(index)"
                      :key="index">
                     {{item}}
                 </div>
-            </div>
-            <div class="day" id="sunday" @click="pickDay($event)" :disabled="input || edit">
-                <!--<div v-for="item in (weekData.weekDates[6].split('/'))" v-bind:key="item">
-                    <div>{{item}}</div>
-                </div>-->
+            </fieldset>
+            <fieldset class="day" id="sunday" @click="pickDay($event)" :disabled="input || edit || lockedWeek">
                 <div v-for="(item, index) in dayItems(weekData.weekDates[6])"
                      :style="itemStyle(index)"
                      :key="index">
                     {{item}}
                 </div>
-            </div>
+            </fieldset>
         </div>
         <div class="show-edit">
-   <!--         <div>
-                HOLA DAY !
-
-                <li v-for="(item, index) in selectedDay" v-bind:key="index">
-                <div>DATE: {{item.salaryDate}}</div>
-                <div>PROJECT: {{item.salaryProject}}</div>
-                <div>HOUR FARE: {{item.salaryHourFare}}</div>
-                <div>WORKED HOURS: {{item.salaryWorkedHours}}</div>
-                <div>TOTAL: {{item.salaryIncome}}</div>
-                <button>edit</button> <button>erase</button></li>
-            </div>-->
-              <!-- <div v-for="item in selectedWeek" v-bind:key="item.salaryDate">
-                <article class="message is-info">
-                    <div class="message-header">
-                        <p>DATE: {{item.salaryDate}}</p>
-                        <button class="delete" aria-label="delete"></button>
-                    </div>
-                    <div class="message-body">
-                        <div>PROJECT: {{item.salaryProject}}</div>
-                        <div>HOUR FARE: {{item.salaryHourFare}}</div>
-                        <div>WORKED HOURS: {{item.salaryWorkedHours}}</div>
-                        <div>TOTAL: {{item.salaryIncome}}</div>
-                    </div>
-                    <footer>
-                        <button>edit</button><button>erase</button>
-                    </footer>
-                </article>
-                </div>
--->
 
             <div id="worked" v-for="(item, index) in selectedWeek" v-bind:key="item.salaryDate">
                 <worked-day :date="selectedWeek[index]"  @remove="erase" @edit="editing"></worked-day>
 
             </div>
-
-
-                <!--<li><div class="card">
-                    <header class="card-header">
-                        <p class="card-header-title">
-                            Component
-                        </p>
-                        <a href="#" class="card-header-icon" aria-label="more options">
-      <span class="icon">
-        <i class="fas fa-angle-down" aria-hidden="true"></i>
-      </span>
-                        </a>
-                    </header>
-                    <div class="card-content">
-                        <div class="content">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.
-                            <a href="#">@bulmaio</a>. <a href="#">#css</a> <a href="#">#responsive</a>
-                            <br>
-                            <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
-                        </div>
-                    </div>
-                    <footer class="card-footer">
-                        <a href="#" class="card-footer-item">Save</a>
-                        <a href="#" class="card-footer-item">Edit</a>
-                        <a href="#" class="card-footer-item">Delete</a>
-                    </footer>
-                </div></li>-->
-              <!--  <li v-for="(item, index) in selectedWeek" v-bind:key="index">
-                <div>DATE: {{item.salaryDate}}</div>
-                <div>PROJECT: {{item.salaryProject}}</div>
-                <div>HOUR FARE: {{item.salaryHourFare}}</div>
-                <div>WORKED HOURS: {{item.salaryWorkedHours}}</div>
-                <div>TOTAL: {{item.salaryIncome}}</div>
-                <button>edit</button> <button>erase</button></li>-->
         </div>
-        <button v-bind:class="{'button is-medium': !lockedWeek, 'button is-medium is-inverted is-outlined' : lockedWeek}" :disabled="lockedWeek"  @click="lockWeek">Lock Week</button>
-        <button class="button is-medium" @click="unlockWeek">Unlock Week</button>
-
-        <!--  <div class="centered-element" v-show="inputEdit">
-          <div class="card">
-              <header class="card-header">
-                  <p class="card-header-title">
-                      Register worked day
-                  </p>
-                  <a href="#" class="card-header-icon" aria-label="more options">
-        <span class="icon">
-          <i class="fas fa-angle-down" aria-hidden="true"></i>
-        </span>
-                  </a>
-              </header>
-              <div class="card-content">
-                  <div class="content">
-                      <li><span> {{workDate}} : DAY WORKED</span></li>
-                      <li><span> {{projectCode}} : PROJECT CODE</span></li>
-                      <li><input type="number" min="0" v-model="priceHour"><span> : PRICE PER WORKED HOUR</span></li>
-                      <li><input type="number" min="0" v-model="workedHours"> : WORKED HOURS</li>
-                      <li><span>{{daySalary}}</span><span> DAY INCOME</span></li>
-                      <li><span>{{prevent}}</span></li>
-                      <br>
-                  </div>
-              </div>
-              <footer class="card-footer">
-                  <a class="card-footer-item" @click="calcDay">Save</a>
-                  <a class="card-footer-item" @click="cancelInputEdit">Cancel</a>
-              </footer>
-          </div>
-          </div>-->
+        <button v-bind:class="{'button is-medium': !lockedWeek, 'button is-medium is-inverted is-outlined' : lockedWeek || selectedWeek.length < 1}" :disabled="lockedWeek || selectedWeek.length < 1"  @click="lockWeek">Lock Week</button>
+        <button v-bind:class="{'button is-medium': !unlockedWeek, 'button is-medium is-inverted is-outlined' : unlockedWeek || selectedWeek.length < 1 }" :disabled="unlockedWeek || selectedWeek.length < 1" @click="unlockWeek">Unlock Week</button>
 
         <div class="modal is-active" v-show="input">
             <div class="modal-background"></div>
@@ -226,7 +110,6 @@
                 </footer>
             </div>
         </div>
-
         <div class="modal is-active" v-show="edit">
             <div class="modal-background"></div>
             <div class="modal-card">
@@ -327,6 +210,8 @@
                 beforeProject: "",
                 refreshWeek: 0,
                 lockedWeek: false,
+                unlockedWeek: true,
+                lockedWeeks: [],
                 weekData:{
                     today: new Date(),
                     weekDays:['monday','tuesday','wednesday', 'thursday', 'friday','saturday','sunday'],
@@ -422,7 +307,7 @@
                 console.log(this.weekData.weekDates)
                 console.log('pushing clean date');
             }
-
+            this.getLockedWeeks()
         },
         computed:{
             daySalary(){
@@ -436,11 +321,52 @@
             edit: function () {
                 this.gettingWeekInfo()
             },
+            lockedWeek: function(){
+                if(this.lockedWeek === true){
+                    this.unlockedWeek = false;
+                }else if(this.lockedWeek === false){
+                    this.unlockedWeek = true;
+                }
+            },
             refreshWeek: function () {
-                this.gettingWeekInfo()
+                this.gettingWeekInfo();
+                this.getLockedWeeks();
                 if(this.refreshWeek > 6){
                     this.refreshWeek = 0
                 }
+            },
+            selectedWeek:{
+                handler: function(val, oldVal){
+                    let oldNew = {
+                        old : oldVal,
+                        new : val
+                    };
+                    let compare = {
+                        lockedWeeksUserId: this.user[0].usersId,
+                        lockedWeeksStartDate: this.formatDate(this.weekData.rawDates[0]),
+                        lockedWeeksEndDate: this.formatDate(this.weekData.rawDates[6])
+                    };
+                    console.log('comparing '+compare+ '');
+                    if(this.selectedWeek.length !== 0){
+                    for(let i = 0; i <= this.lockedWeeks.length; i++){
+                        console.log('looping selected days index '+ i +'')
+                        if(this.lockedWeeks[i].lockedWeeksUserId === compare.lockedWeeksUserId && this.lockedWeeks[i].lockedWeeksStartDate === compare.lockedWeeksStartDate && this.lockedWeeks[i].lockedWeeksEndDate === compare.lockedWeeksEndDate){
+                        this.lockedWeek = true;
+                        console.log('Locked Week: '+this.lockedWeek+'')
+                            break;
+                        }else{
+                         this.lockedWeek = false;
+                            console.log('Locked Week: '+this.lockedWeek+'')
+
+                        }
+                    }
+                } else {
+                        this.lockedWeek = false;
+
+                    }
+                    console.log(oldNew)
+                },
+                deep:true
             }
 
 
@@ -484,10 +410,12 @@
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify(day),
+                        body: JSON.stringify(day)
                     }).then(response => response.json())
                         .then(data => {
                             console.log('Success:', data);
+                            this.gettingWeekInfo();
+
                         })
                         .catch((error) => {
                             console.error('Error:', error);
@@ -500,7 +428,7 @@
                      this.passwords = data.passwords;
                  });*/
                     this.gettingDayInfo(this.picked);
-                    this.gettingWeekInfo();
+                   // this.gettingWeekInfo();
                     this.workedDays.push(day);
                     this.workDate = "";
                     // this.projectCode = "";
@@ -554,11 +482,12 @@
                 }).then(response => response.json())
                     .then(data => {
                         console.log('Success PUT:', data);
+                        this.gettingWeekInfo();
+
                     })
                     .catch((error) => {
                         console.error('Error:', error);
                     });
-                this.gettingWeekInfo();
                 this.workDate = "";
                 this.projectCode = JSON.parse(JSON.stringify(this.beforeProject));
                 this.priceHour = 479;
@@ -574,6 +503,7 @@
                 this.refreshWeek++
             },
             lockWeek: function(){
+                this.refreshWeek++;
                 if(confirm(" Are you sure you want to lock registered week ? Once you have locked a week you cannot make new changes on that week.")){
                 fetch('http://127.0.0.1:3000/api/salary/lock', {
                     method: 'PATCH',
@@ -588,16 +518,41 @@
                     }),
                 }).then(response => response.json())
                     .then(data => {
-                        console.log('Success PUT:', data);
+                        console.log('Success PATCH:', data);
                     })
                     .catch((error) => {
                         console.error('Error:', error);
                     });
-                this.gettingWeekInfo();
-                this.refreshWeek++;
+                    let url = new URL('http://127.0.0.1:3000/api/lockedWeeks')
+                    var lockedWeek = {
+                        lockedWeeksUserId: this.user[0].usersId,
+                        lockedWeeksStartDate: this.formatDate(this.weekData.rawDates[0]),
+                        lockedWeeksEndDate: this.formatDate(this.weekData.rawDates[6])
+                    }
+                    fetch(url, {
+                        method: 'POST',
+                        headers:{
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(lockedWeek)
+                    }).then(response => response.json())
+                        .then(data => {
+                            console.log('Success:', data);
+                            this.gettingWeekInfo();
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                        });
+
+                    this.gettingWeekInfo();
+                    this.refreshWeek++;
+                    this.getLockedWeeks();
+
+
                 }
             },
             unlockWeek: function(){
+                this.refreshWeek++;
                 if(confirm(" Are you sure you want to unlock registered  locked week ? ")){
                     fetch('http://127.0.0.1:3000/api/salary/lock', {
                         method: 'PATCH',
@@ -617,9 +572,48 @@
                         .catch((error) => {
                             console.error('Error:', error);
                         });
+                    let unlockWeek = {
+                        lockedWeeksUserId: this.user[0].usersId,
+                        lockedWeeksStartDate: this.formatDate(this.weekData.rawDates[0]),
+                        lockedWeeksEndDate: this.formatDate(this.weekData.rawDates[6])
+                    };
+                    fetch('http://127.0.0.1:3000/api/lockedWeeks',  {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(unlockWeek)
+                    }).then(response => response.json())
+                        .then(data => {
+                            console.log('Success:', data);
+                            this.gettingWeekInfo();
+                        })
+                        .catch((error) => {
+                            console.error('Error:', error);
+                        });
+
                     this.gettingWeekInfo();
                     this.refreshWeek++;
+                    this.getLockedWeeks();
+
                 }
+            },
+            getLockedWeeks: function(){
+                /*let url = new URL('http://127.0.0.1:3000/api/lockedWeeks'+this.user[0].usersId)
+                let params = {
+                    id: this.user[0].usersId
+                }
+                url.search = new URLSearchParams(params).toString()*/
+
+                fetch('http://127.0.0.1:3000/api/lockedWeeks/'+this.user[0].usersId+'')//+this.user[0].usersId)
+                    .then((response) => {
+                        return response.json();
+                    })
+                    .then((data) => {
+                        console.log(data.lockedWeeks);
+                        this.lockedWeeks = data.lockedWeeks;
+
+                    });
             },
             getPeriod: function(){
                 console.log("getPeriod called")

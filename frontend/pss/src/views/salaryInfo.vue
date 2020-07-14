@@ -59,14 +59,175 @@
                 </div>
             </section>
         </side>
-        <table class="table is-bordered is-striped is-narrow is-hoverable">
+        <div id="calc">
+            <table class="table  is-narrow is-bordered">
+                <thead>
+                <tr>
+                    <th><abbr title="user-info">User Info</abbr></th>
+                    <th><abbr title="calculations">Calculations</abbr></th>
+                    <th><abbr title="hours-worked">Hours Worked</abbr></th>
+                    <th><abbr title="left-in-pot">Left in pot this month</abbr></th>
+
+                </tr>
+                </thead>
+                <tfoot>
+                <tr>
+                    <!--  <th><abbr title="Position">Pos</abbr></th>
+                      <th>Team</th>
+                      <th><abbr title="Played">Pld</abbr></th>
+                      <th><abbr title="Won">W</abbr></th>
+                      <th><abbr title="Drawn">D</abbr></th>
+                      <th><abbr title="Lost">L</abbr></th>
+                      <th><abbr title="Goals for">GF</abbr></th>
+                      <th><abbr title="Goals against">GA</abbr></th>
+                      <th><abbr title="Goal difference">GD</abbr></th>
+                      <th><abbr title="Points">Pts</abbr></th>
+                      <th>Qualification or relegation</th>-->
+                </tr>
+                </tfoot>
+                <tbody>
+                <tr>
+                    <td><strong> Hour fare: </strong>
+                    </td>
+                    <td>{{user.usersPriceHour}}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><strong> Stair Level: </strong>
+                    </td>
+                    <td>{{user.usersPctLevel}}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><strong> Salary /hour : </strong>
+                    </td>
+                    <td>{{user.usersPctLevel * user.usersPriceHour}} kr</td>
+                    <td>150</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><strong> Brutto Salary: </strong>
+                    </td>
+                    <td>{{user.usersBruttoSalary.toLocaleString('en-US')}}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><strong> Employeer Fee {{user.usersEmployeerFee}}: </strong>
+                    </td>
+                    <td> {{user.usersEmployeerFee * user.usersBruttoSalary}}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><strong> Paid vacation: </strong>
+                    </td>
+                    <td>{{user.usersPaidVacation}}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><strong> Extra Pension:</strong>
+                    </td>
+                    <td> {{user.usersExtraPension}}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><strong> Extra Insurance: </strong>
+                    </td>
+                    <td>{{user.usersInsurance}}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><strong> Salary Tax: </strong>
+                    </td>
+                    <td>{{user.usersSalaryTax}}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><strong> Competence Cost : </strong>
+                    </td>
+                    <td>{{user.usersCompetenceCost}}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><strong> Health Add-On: : </strong>
+                    </td>
+                    <td>{{user.usersHealthSupport}}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><strong> Mobile Cost: </strong>
+                    </td>
+                    <td>{{user.usersMobile}}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><strong> Laptop Cost: </strong>
+                    </td>
+                    <td>{{user.usersLaptop}}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><strong> Hardware Cost: </strong>
+                    </td>
+                    <td>{{user.usersMiscHardware}}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><strong> Misc Cost: </strong>
+                    </td>
+                    <td>{{user.usersMisc}}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><strong> Total : </strong>
+                    </td>
+                    <td>{{user.usersBruttoSalary + (user.usersBruttoSalary * user.usersEmployeerFee)}}</td>
+                    <td>{{150 * (user.usersPriceHour * user.usersPctLevel)}}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+
+
+                </tbody>
+            </table>
+        </div>
+        <div id="tab">
+        <table class="table is-bordered is-striped is-hoverable">
             <thead>
             <tr>
-                <th><abbr title="Date">Date</abbr></th>
-                <th><abbr title="Project">Project</abbr></th>
-                <th><abbr title="Hour Fare">Hour Fare</abbr></th>
-                <th><abbr title="Worked Hours">Worked Hours</abbr></th>
-                <th><abbr title="Day Income">Day Income</abbr></th>
+                <th><abbr title="date">Date</abbr></th>
+                <th><abbr title="project">Project</abbr></th>
+                <th><abbr title="hour-fare">Hour Fare</abbr></th>
+                <th><abbr title="worked-hours">Worked Hours</abbr></th>
+                <th><abbr title="day-income">Day Income</abbr></th>
             </tr>
             </thead>
             <tfoot>
@@ -96,6 +257,7 @@
             </tr>
             </tbody>
         </table>
+        </div>
     </div>
 </template>
 
@@ -112,6 +274,7 @@
             }
         },
         created(){
+
             this.user = this.$route.params.user;
            /* var start = this.user.usersHiringDate;
             var end = new Date();*/
@@ -185,5 +348,13 @@
 }
 side{
     text-align: left;
+    background-color: gray;
+}
+#tab{
+    background-color: darkolivegreen;
+
+}
+#calc{
+    background-color: #2c3e50;
 }
 </style>
