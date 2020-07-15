@@ -2,6 +2,7 @@
     <div id="salaryInfo">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.0/css/bulma-rtl.css" integrity="sha256-8c3iUwMTRp4NGIoybGwbQUO27Luo4DwwC27e+2IXGzM=" crossorigin="anonymous" />
         <side>
+            <button class="button is-normal" @click="previous">Previous Month</button><button class="button is-normal" @click="actual">This Month</button>
             <section class="section">
                 <div class="container">
                     <h1 class="title">{{user.usersName}} {{user.usersLastName}}</h1>
@@ -17,7 +18,7 @@
                             <li><p1>Hiring date: </p1><p2>{{user.usersHiringDate}}</p2></li>
                             <li><p1>First Costumer: </p1><p2>{{user.usersFirstCostumer}}</p2></li>
                             <li><p1>Last Costumer: </p1><p2>{{user.usersLastCostumer}}</p2></li>
-                            <li><p1> Stair level: </p1><p2>{{user.usersPctLevel}}</p2></li>
+                            <!--<li><p1> Stair level: </p1><p2>{{user.usersPctLevel}}</p2></li>
                             <li><p1> Hour fare: </p1><p2>{{user.usersPriceHour}}</p2></li>
                             <li><p1> Brutto Salary: </p1><p2>{{user.usersBruttoSalary}}</p2></li>
                             <li><p1> Employeer Fee: </p1><p2>{{user.usersEmployeerFee}}</p2></li>
@@ -30,7 +31,7 @@
                             <li><p1> Laptop Cost: </p1><p2>{{user.usersLaptop}}</p2></li>
                             <li><p1> Hardware Cost: </p1><p2>{{user.usersMiscHardware}}</p2></li>
                             <li><p1> Misc. : </p1><p2>{{user.usersMisc}}</p2></li>
-                            <li><p1> Competence Cost: </p1><p2>{{user.usersCompetenceCost}}</p2></li>
+                            <li><p1> Competence Cost: </p1><p2>{{user.usersCompetenceCost}}</p2></li>-->
 
 
 
@@ -105,15 +106,15 @@
                 <tr>
                     <td><strong> Salary /hour : </strong>
                     </td>
-                    <td>{{user.usersPctLevel * user.usersPriceHour}} kr</td>
-                    <td>150</td>
+                    <td>{{totalSalaryHour.toLocaleString('en-US')}} kr</td>
+                    <td>{{month.workedHours[0].workedHours}}</td>
                     <td></td>
                     <td></td>
                 </tr>
                 <tr>
                     <td><strong> Brutto Salary: </strong>
                     </td>
-                    <td>{{user.usersBruttoSalary.toLocaleString('en-US')}}</td>
+                    <td>{{user.usersBruttoSalary.toLocaleString('en-US')}} kr</td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -121,7 +122,7 @@
                 <tr>
                     <td><strong> Employeer Fee {{user.usersEmployeerFee}}: </strong>
                     </td>
-                    <td> {{user.usersEmployeerFee * user.usersBruttoSalary}}</td>
+                    <td> {{employerFeeCalc.toLocaleString('en-US')}} kr</td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -209,8 +210,8 @@
                 <tr>
                     <td><strong> Total : </strong>
                     </td>
-                    <td>{{user.usersBruttoSalary + (user.usersBruttoSalary * user.usersEmployeerFee)}}</td>
-                    <td>{{150 * (user.usersPriceHour * user.usersPctLevel)}}</td>
+                    <td>{{totalExpensCalc.toLocaleString('en-US')}} kr</td>
+                    <td>{{totalIncomeCalc.toLocaleString('en-US')}} kr</td>
                     <td></td>
                     <td></td>
                 </tr>
@@ -218,9 +219,11 @@
 
                 </tbody>
             </table>
+
         </div>
+
         <div id="tab">
-        <table class="table is-bordered is-striped is-hoverable">
+            <table class="table is-bordered is-striped is-hoverable">
             <thead>
             <tr>
                 <th><abbr title="date">Date</abbr></th>
@@ -228,6 +231,8 @@
                 <th><abbr title="hour-fare">Hour Fare</abbr></th>
                 <th><abbr title="worked-hours">Worked Hours</abbr></th>
                 <th><abbr title="day-income">Day Income</abbr></th>
+                <th><abbr title="user-locked">User Locked</abbr></th>
+
             </tr>
             </thead>
             <tfoot>
@@ -253,6 +258,8 @@
                 <td>{{item.salaryHourFare}} kr</td>
                 <td>{{item.salaryWorkedHours}}</td>
                 <td>{{item.salaryIncome.toLocaleString('en-US')}} kr</td>
+                <td>{{item.salaryUserLocked}} </td>
+
 
             </tr>
             </tbody>
@@ -262,6 +269,10 @@
 </template>
 
 <script>
+    // import{eachDayOfInterval, startOfMonth, endOfWeek, subWeeks, addWeeks, getISODay, getDate, getMonth, getYear /*,format*/} from 'date-fns'
+    import{ startOfMonth, endOfMonth , subMonths /*,format*/} from 'date-fns'
+
+
     export default {
         name: "salaryInfo",
         props: {
@@ -270,12 +281,23 @@
         data(){
             return{
             salary: [],
-            pot:[]
+            pot:[],
+            today: new Date(),
+            employerFeeCalc: "",
+            totalExpenseCalc:"",
+            totalIncomeCalc:"",
+            totalSalaryHour:"",
+            month:{
+                start: "",
+                end: "",
+                workedHours: ""
+            },
             }
         },
         created(){
 
             this.user = this.$route.params.user;
+            this.getStartEnd();
            /* var start = this.user.usersHiringDate;
             var end = new Date();*/
 
@@ -284,8 +306,8 @@
             var url = new URL('http://127.0.0.1:3000/api/salary/period')
             var params = {
                 id: this.user.usersId,
-                startDay: this.formatDate(this.user.usersHiringDate),//this.user.usersHiringDate, //'2020-03-26'
-                endDay: this.formatDate(new Date())//'2020-07-12'
+                startDay: this.formatDate(this.month.start),//this.user.usersHiringDate, //'2020-03-26'
+                endDay: this.formatDate(this.month.end)//'2020-07-12'
             };
             console.log(params)
             url.search = new URLSearchParams(params).toString()
@@ -297,6 +319,7 @@
                 .then((data) => {
                     console.log(data.salary);
                     this.salary = data.salary;
+                    this.workedHours();
 
                 });
 
@@ -304,7 +327,19 @@
         watch:{
             user: function(){
                 this.updatePot()
+            },
+            month:{
+                handler: function(val, oldVal){
+                    console.log(val, oldVal);
+                  this.totalSalaryHour = this.user.usersPctLevel * this.user.usersPriceHour;
+                  this.employerFeeCalc = this.user.usersEmployeerFee * this.user.usersBruttoSalary;
+                  this. totalExpensCalc = this.employerFeeCalc + this.user.usersBruttoSalary;
+                  this.totalIncomeCalc = this.month.workedHours[0].workedHours * this.totalSalaryHour;
+                },
+                deep: true
+
             }
+
         },
         methods:{
             updatePot: function() {
@@ -324,6 +359,97 @@
                     });
 
 
+            },
+            getStartEnd:function(){
+                let oldStart = startOfMonth(new Date());
+                let oldEnd = endOfMonth(new Date());
+
+                let dateObjS = oldStart;
+                let monthS = '' + (dateObjS.getMonth() + 1);
+                let dayS = '' + dateObjS.getDate();
+                let yearS = dateObjS.getFullYear();
+
+                if (monthS.length < 2)
+                    monthS = '0' + monthS;
+                if (dayS.length < 2)
+                    dayS = '0' + dayS;
+
+
+
+                let dateObjE = oldEnd;
+                let monthE = '' + (dateObjE.getMonth() + 1);
+                let dayE = '' + dateObjE.getDate();
+                let yearE = dateObjE.getFullYear();
+
+                if (monthE.length < 2)
+                    monthE = '0' + monthE;
+                if (dayE.length < 2)
+                    dayE = '0' + dayE;
+
+                let newStart =[yearS, monthS, dayS].join('-');
+                let newEnd =[yearE, monthE, dayE].join('-');
+
+                this.month.start = newStart;
+                this.month.end = newEnd;
+
+            },
+            getMonth: function(){
+                var url = new URL('http://127.0.0.1:3000/api/salary/period')
+                var params = {
+                    id: this.user.usersId,
+                    startDay: this.formatDate(this.month.start),//this.user.usersHiringDate, //'2020-03-26'
+                    endDay: this.formatDate(this.month.end)//'2020-07-12'
+                };
+                console.log(params)
+                url.search = new URLSearchParams(params).toString()
+
+                fetch(url)
+                    .then((response) => {
+                        return response.json();
+                    })
+                    .then((data) => {
+                        console.log(data.salary);
+                        this.salary = data.salary;
+                        this.workedHours();
+
+                    });
+
+            },
+            previous: function(){
+                this.month.start = subMonths(new Date(this.month.start), 1);
+                this.month.end = subMonths(new Date(this.month.end), 1);
+                this.getMonth();
+                this.workedHours();
+
+
+            },
+            actual: function(){
+               /* this.month.start = startOfMonth(new Date());
+                this.month.end = endOfMonth(new Date());*/
+               this.getStartEnd();
+                this.getMonth();
+                this.workedHours()
+            },
+            workedHours: function(){
+                var url = new URL('http://127.0.0.1:3000/api/salary/workedHours')
+                var params = {
+                    id: this.user.usersId,
+                    startDay: this.formatDate(this.month.start),//this.user.usersHiringDate, //'2020-03-26'
+                    endDay: this.formatDate(this.month.end),//'2020-07-12'
+                    locked: "1"
+                };
+                console.log(params)
+                url.search = new URLSearchParams(params).toString()
+
+                fetch(url)
+                    .then((response) => {
+                        return response.json();
+                    })
+                    .then((data) => {
+                        console.log(data.salary);
+                        this.month.workedHours = data.salary;
+
+                    });
             },
             formatDate:function (date) {
                 var d = new Date(date),

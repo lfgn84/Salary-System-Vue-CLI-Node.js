@@ -511,6 +511,21 @@ app.patch("/api/salary/unlock", (req, res, next) => {
 
     })
 });
+app.get("/api/salary/workedHours",(req, res, next) => {
+    console.log('gettin locked ('+req.query.locked+') period from: ' + req.query.startDay +" to: "+req.query.endDay + " ID:  "+ req.query.id );
+    var params = [req.query.startDay, req.query.endDay, req.query.id, req.query.locked]
+    var sql = "select sum(salaryWorkedHours) as workedHours from salary where (salaryDate between ? and ? ) and salaryUserId = ? and salaryUserLocked = ?"
+    salarydb.all(sql,params, (err, rows) =>{
+        if (err){
+            res.status(400).jason({"err": err.message});
+            return;
+        }
+        res.json({
+            "message":"success",
+            "salary": rows
+        })
+    });
+});
 app.get("/api/lockedWeeks/:id", (req, res, next) => {
     var sql = "select * from lockedWeeks where lockedWeeksUserId = ?"
     var params = [req.params.id]
