@@ -81,7 +81,8 @@
             </div>
         </div>
         <button v-bind:class="{'button is-medium': !lockedWeek, 'button is-medium is-inverted is-outlined' : lockedWeek || selectedWeek.length < 1}" :disabled="lockedWeek || selectedWeek.length < 1"  @click="lockWeek">Lock Week</button>
-        <button v-bind:class="{'button is-medium': !unlockedWeek, 'button is-medium is-inverted is-outlined' : unlockedWeek || selectedWeek.length < 1 }" :disabled="unlockedWeek || selectedWeek.length < 1" @click="unlockWeek">Unlock Week</button>
+
+        <button v-bind:class="{'button is-medium': !unlockedWeek, 'button is-medium is-inverted is-outlined' : unlockedWeek || selectedWeek.length < 1 }" :disabled="unlockedWeek || selectedWeek.length < 1" @click="unlockWeek"  v-show="user[0].usersRange == 'owner' || user[0].usersRange == 'admin'">Unlock Week</button>
 
         <div class="modal is-active" v-show="input">
             <div class="modal-background"></div>

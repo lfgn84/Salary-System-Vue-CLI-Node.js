@@ -2,7 +2,8 @@
     <div id="salaryInfo">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.0/css/bulma-rtl.css" integrity="sha256-8c3iUwMTRp4NGIoybGwbQUO27Luo4DwwC27e+2IXGzM=" crossorigin="anonymous" />
         <side>
-            <button class="button is-normal" @click="previous">Previous Month</button><button class="button is-normal" @click="actual">This Month</button>
+            <div id="h">{{monthYear}}</div>
+            <button class="button is-normal  is-dark" @click="previous">Previous Month</button><div class="separator"></div><button class="button is-normal  is-dark" @click="actual">This Month</button>
             <section class="section">
                 <div class="container">
                     <h1 class="title">{{user.usersName}} {{user.usersLastName}}</h1>
@@ -88,7 +89,7 @@
                 </tfoot>
                 <tbody>
                 <tr>
-                    <td><strong> Hour fare: </strong>
+                    <td><strong> Hour fare </strong>
                     </td>
                     <td>{{user.usersPriceHour}}</td>
                     <td></td>
@@ -96,7 +97,7 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td><strong> Stair Level: </strong>
+                    <td><strong> Stair Level </strong>
                     </td>
                     <td>{{user.usersPctLevel}}</td>
                     <td></td>
@@ -104,7 +105,7 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td><strong> Salary /hour : </strong>
+                    <td><strong> Salary /hour  </strong>
                     </td>
                     <td>{{totalSalaryHour.toLocaleString('en-US')}} kr</td>
                     <td>{{month.workedHours[0].workedHours}}</td>
@@ -112,7 +113,7 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td><strong> Brutto Salary: </strong>
+                    <td><strong> Brutto Salary </strong>
                     </td>
                     <td>{{user.usersBruttoSalary.toLocaleString('en-US')}} kr</td>
                     <td></td>
@@ -120,7 +121,7 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td><strong> Employeer Fee {{user.usersEmployeerFee}}: </strong>
+                    <td><strong> Employeer Fee {{user.usersEmployeerFee}} </strong>
                     </td>
                     <td> {{employerFeeCalc.toLocaleString('en-US')}} kr</td>
                     <td></td>
@@ -128,7 +129,7 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td><strong> Paid vacation: </strong>
+                    <td><strong> Paid vacation </strong>
                     </td>
                     <td>{{user.usersPaidVacation}}</td>
                     <td></td>
@@ -144,7 +145,7 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td><strong> Extra Insurance: </strong>
+                    <td><strong> Extra Insurance </strong>
                     </td>
                     <td>{{user.usersInsurance}}</td>
                     <td></td>
@@ -152,7 +153,7 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td><strong> Salary Tax: </strong>
+                    <td><strong> Salary Tax </strong>
                     </td>
                     <td>{{user.usersSalaryTax}}</td>
                     <td></td>
@@ -160,7 +161,7 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td><strong> Competence Cost : </strong>
+                    <td><strong> Competence Cost  </strong>
                     </td>
                     <td>{{user.usersCompetenceCost}}</td>
                     <td></td>
@@ -168,7 +169,7 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td><strong> Health Add-On: : </strong>
+                    <td><strong> Health Add-On </strong>
                     </td>
                     <td>{{user.usersHealthSupport}}</td>
                     <td></td>
@@ -176,7 +177,7 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td><strong> Mobile Cost: </strong>
+                    <td><strong> Mobile Cost </strong>
                     </td>
                     <td>{{user.usersMobile}}</td>
                     <td></td>
@@ -184,7 +185,7 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td><strong> Laptop Cost: </strong>
+                    <td><strong> Laptop Cost </strong>
                     </td>
                     <td>{{user.usersLaptop}}</td>
                     <td></td>
@@ -192,7 +193,7 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td><strong> Hardware Cost: </strong>
+                    <td><strong> Hardware Cost </strong>
                     </td>
                     <td>{{user.usersMiscHardware}}</td>
                     <td></td>
@@ -200,7 +201,7 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td><strong> Misc Cost: </strong>
+                    <td><strong> Misc Cost </strong>
                     </td>
                     <td>{{user.usersMisc}}</td>
                     <td></td>
@@ -208,7 +209,7 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td><strong> Total : </strong>
+                    <td><strong> Total  </strong>
                     </td>
                     <td>{{totalExpensCalc.toLocaleString('en-US')}} kr</td>
                     <td>{{totalIncomeCalc.toLocaleString('en-US')}} kr</td>
@@ -258,7 +259,8 @@
                 <td>{{item.salaryHourFare}} kr</td>
                 <td>{{item.salaryWorkedHours}}</td>
                 <td>{{item.salaryIncome.toLocaleString('en-US')}} kr</td>
-                <td>{{item.salaryUserLocked}} </td>
+                <td v-if="item.salaryUserLocked == 1">true</td>
+                <td v-else-if="item.salaryUserLocked == 0">false</td>
 
 
             </tr>
@@ -340,6 +342,52 @@
 
             }
 
+        },computed:{
+            monthYear: function(){
+                let month = this.month.start.split('-');
+                let actualM = month[1];
+                let actualY = month[0];
+                switch (actualM) {
+                    case '01':
+                        actualM = 'January';
+                        break;
+                    case '02':
+                        actualM = 'February';
+                        break;
+                    case '03':
+                        actualM = 'March';
+                        break;
+                    case '04':
+                        actualM = 'April';
+                        break;
+                    case '05':
+                        actualM = 'May';
+                        break;
+                    case '06':
+                        actualM = 'June';
+                        break;
+                    case '07':
+                        actualM = 'July';
+                        break;
+                    case '08':
+                        actualM = 'August';
+                        break;
+                    case '09':
+                        actualM = 'September';
+                        break;
+                    case '10':
+                        actualM = 'October';
+                        break;
+                    case '11':
+                        actualM = 'November';
+                        break;
+                    case '12':
+                        actualM = 'December';
+                        break;
+                }
+
+                return [actualM, actualY].join(' ');
+            }
         },
         methods:{
             updatePot: function() {
@@ -416,8 +464,8 @@
 
             },
             previous: function(){
-                this.month.start = subMonths(new Date(this.month.start), 1);
-                this.month.end = subMonths(new Date(this.month.end), 1);
+                this.month.start = this.formatDate(subMonths(new Date(this.month.start), 1));
+                this.month.end = this.formatDate(subMonths(new Date(this.month.end), 1));
                 this.getMonth();
                 this.workedHours();
 
@@ -474,7 +522,12 @@
 }
 side{
     text-align: left;
-    background-color: gray;
+
+}
+#h{
+    font-weight: bold;
+    font-size: 35px;
+    text-align: center;
 }
 #tab{
     background-color: darkolivegreen;
@@ -482,5 +535,10 @@ side{
 }
 #calc{
     background-color: #2c3e50;
+    text-align: left
+}
+.separator{
+    width: 5px;
+    height: 10px;
 }
 </style>
