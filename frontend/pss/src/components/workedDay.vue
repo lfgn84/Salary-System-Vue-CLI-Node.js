@@ -76,11 +76,13 @@
                 }).then(response => response.json())
                     .then(data => {
                         console.log('Success:', data);
+                        var decrease = this.dayInfo.salaryIncome;
+                        this.$emit('remove', decrease);
+
                     })
                     .catch((error) => {
                         console.error('Error:', error);
                     });
-                this.$emit('remove');
             }
         },
             edit: async function(){
@@ -93,7 +95,9 @@
                     salaryIncome: this.dayInfo.salaryHourFare * this.dayInfo.salaryWorkedHours
 
                 };
-                this.$emit('edit', data)
+                let oldPotV = this.dayInfo.salaryIncome;
+                this.$emit('edit', data, oldPotV);
+
             }
     }
 }

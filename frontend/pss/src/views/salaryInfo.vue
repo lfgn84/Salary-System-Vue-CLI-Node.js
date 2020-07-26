@@ -15,7 +15,9 @@
                             <li><p1>e-mail: </p1><p2>{{user.usersEmail}}</p2></li>
                             <li><p1> Tel: </p1><p2>{{user.usersPhone}}</p2></li>
                             <li><p1>PSS id: </p1><p2>{{user.usersId}}</p2></li>
-                            <li><p1>Income Pot: </p1> <p2 id="pot">{{pot[0].pot.toLocaleString('en-US')}} kr</p2></li>
+                            <li><p1>Income Pot: </p1> <p2 id="pot" v-bind:class="{'potPlus': pot.actual[0].potWatchNewPot > 0, 'potMinus': pot.actual[0].potWatchNewPot < 0}" v-if=" pot.actual.length > 0">{{pot.actual[0].potWatchNewPot.toLocaleString('en-US')}} kr</p2>
+                                <p2 id="pot" v-else-if=" pot.actual.length === 0">0</p2>
+                            </li>
                             <li><p1>Hiring date: </p1><p2>{{user.usersHiringDate}}</p2></li>
                             <li><p1>First Costumer: </p1><p2>{{user.usersFirstCostumer}}</p2></li>
                             <li><p1>Last Costumer: </p1><p2>{{user.usersLastCostumer}}</p2></li>
@@ -55,8 +57,23 @@
                                 <!--                <button class="button is-medium" @click="logOut">Log Out</button>-->
                             </li>
                             <li><button class="button is-medium" v-show="user.usersRange == 'owner' || user.usersRange == 'admin' ">Create a user</button></li>
-                            <li><button class="button is-medium" v-show="user.usersRange == 'owner' || user.usersRange == 'admin'">Checkout User</button></li>
+                            <li><button class="button is-medium" v-show="user.usersRange == 'owner' || user.usersRange == 'admin'" @click="checkUser = true">Checkout User</button></li>
                         </ul>
+                        <div class="modal is-active" v-show="checkUser && (user.usersRange == 'owner' || user.usersRange == 'admin')">
+                            <div class="modal-background"></div>
+                            <div class="modal-content">
+                                <!-- Any other Bulma elements you want -->
+                                <ul class="menu-list" id="users">
+                                    <li>
+                                        <a class="is-active">Manage Your Team</a>
+                                        <ul v-for="(index, item) in usersList" v-bind:key="index">
+                                            <user-list :userListed="usersList[item]"></user-list>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                            <button class="modal-close is-large" aria-label="close"  @click="checkUser = false"></button>
+                        </div>
                     </h2>
                 </div>
             </section>
@@ -91,7 +108,7 @@
                 <tr>
                     <td><strong> Hour fare </strong>
                     </td>
-                    <td>{{user.usersPriceHour}}</td>
+                    <td>{{user.usersPriceHour}} kr/h</td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -99,16 +116,17 @@
                 <tr>
                     <td><strong> Stair Level </strong>
                     </td>
-                    <td>{{user.usersPctLevel}}</td>
+                    <td>{{user.usersPctLevel * 100}}%</td>
                     <td></td>
                     <td></td>
                     <td></td>
                 </tr>
                 <tr>
-                    <td><strong> Salary /hour  </strong>
+                    <td><strong> Salary / hour  </strong>
                     </td>
                     <td>{{totalSalaryHour.toLocaleString('en-US')}} kr</td>
-                    <td>{{month.workedHours[0].workedHours}}</td>
+                    <td v-if="month.workedHours[0].workedHours !== null">{{month.workedHours[0].workedHours}}</td>
+                    <td v-else>0</td>
                     <td></td>
                     <td></td>
                 </tr>
@@ -121,7 +139,7 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td><strong> Employeer Fee {{user.usersEmployeerFee}} </strong>
+                    <td><strong> Employeer Fee {{(user.usersEmployeerFee * 100).toLocaleString('en-US')}}% </strong>
                     </td>
                     <td> {{employerFeeCalc.toLocaleString('en-US')}} kr</td>
                     <td></td>
@@ -131,7 +149,7 @@
                 <tr>
                     <td><strong> Paid vacation </strong>
                     </td>
-                    <td>{{user.usersPaidVacation}}</td>
+                    <td>{{user.usersPaidVacation * 100}}% </td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -213,7 +231,8 @@
                     </td>
                     <td>{{totalExpensCalc.toLocaleString('en-US')}} kr</td>
                     <td>{{totalIncomeCalc.toLocaleString('en-US')}} kr</td>
-                    <td></td>
+                    <td v-if="pot.actual.length > 0">{{pot.actual[0].potWatchNewPot.toLocaleString('en-US')}} kr</td>
+                    <td v-else>0 </td>
                     <td></td>
                 </tr>
 
@@ -222,8 +241,9 @@
             </table>
 
         </div>
+        <div></div>
 
-        <div id="tab">
+        <div id="tab" v-show="salary.length > 0">
             <table class="table is-bordered is-striped is-hoverable">
             <thead>
             <tr>
@@ -273,17 +293,21 @@
 <script>
     // import{eachDayOfInterval, startOfMonth, endOfWeek, subWeeks, addWeeks, getISODay, getDate, getMonth, getYear /*,format*/} from 'date-fns'
     import{ startOfMonth, endOfMonth , subMonths /*,format*/} from 'date-fns'
-
+    import userList from "../components/userList";
 
     export default {
         name: "salaryInfo",
+        components: {userList},
         props: {
-            user: Object, Array,
+            user: [Object, Array]
         },
         data(){
-            return{
+            return {
             salary: [],
-            pot:[],
+            pot:{
+                actual: [],
+                reg: []
+            },
             today: new Date(),
             employerFeeCalc: "",
             totalExpenseCalc:"",
@@ -294,17 +318,24 @@
                 end: "",
                 workedHours: ""
             },
+            checkUser: false,
+            usersList: []
             }
         },
         created(){
-
-            this.user = this.$route.params.user;
+            if(sessionStorage.user){this.user = JSON.parse(sessionStorage.user)}
+            else{
+                this.user = this.$route.params.user;
+            }
             this.getStartEnd();
+            this.getPot();
+            this.getUsersList();
            /* var start = this.user.usersHiringDate;
             var end = new Date();*/
 
     },
         mounted() {
+            if(sessionStorage.user){this.user = JSON.parse(sessionStorage.user)}
             var url = new URL('http://127.0.0.1:3000/api/salary/period')
             var params = {
                 id: this.user.usersId,
@@ -342,7 +373,8 @@
 
             }
 
-        },computed:{
+        },
+        computed:{
             monthYear: function(){
                 let month = this.month.start.split('-');
                 let actualM = month[1];
@@ -390,7 +422,7 @@
             }
         },
         methods:{
-            updatePot: function() {
+         /*   updatePot: function() {
                 var url = new URL('http://127.0.0.1:3000/api/salary/pot');
                 var params = {
                     id: this.user.usersId
@@ -407,7 +439,7 @@
                     });
 
 
-            },
+            },*/
             getStartEnd:function(){
                 let oldStart = startOfMonth(new Date());
                 let oldEnd = endOfMonth(new Date());
@@ -499,6 +531,49 @@
 
                     });
             },
+            getPot: function(){
+                let url = new URL('http://127.0.0.1:3000/api/potWatch')
+                let params = {
+                    id: this.user.usersId,
+                };
+                url.search = new URLSearchParams(params).toString()
+
+                fetch(url)//+this.user[0].usersId)
+                    .then((response) => {
+                        return response.json();
+                    })
+                    .then((data) => {
+                        console.log(data.potWatch);
+                        this.pot.reg = data.potWatch;
+
+                    });
+                let url2 = new URL('http://127.0.0.1:3000/api/potWatch/actual')
+                let params2 = {
+                    id: this.user.usersId,
+                };
+                url2.search = new URLSearchParams(params2).toString()
+                fetch(url2)//+this.user[0].usersId)
+                    .then((response) => {
+                        return response.json();
+                    })
+                    .then((data) => {
+                        console.log(data.potWatch);
+                        this.pot.actual = data.potWatch;
+
+                    });
+            },
+            getUsersList: function(){
+                let url = new URL('http://127.0.0.1:3000/api/users/list')
+                fetch(url)//+this.user[0].usersId)
+                    .then((response) => {
+                        return response.json();
+                    })
+                    .then((data) => {
+                        console.log(data.users);
+                        this.usersList = data.users;
+
+                    });
+            },
             formatDate:function (date) {
                 var d = new Date(date),
                     month = '' + (d.getMonth() + 1),
@@ -524,6 +599,20 @@ side{
     text-align: left;
 
 }
+.potPLus{
+    border: solid thick lightblue;
+    background-color: #42b983;
+    color: white;
+    padding-right: 15px;
+    padding-left: 5px;
+}
+.potMinus{
+    border: solid thick lightcoral;
+    background-color: lightpink;
+    color: red;
+    padding-right: 15px;
+    padding-left: 5px;
+}
 #h{
     font-weight: bold;
     font-size: 35px;
@@ -541,4 +630,8 @@ side{
     width: 5px;
     height: 10px;
 }
+#users{
+    background-color: white;
+}
+
 </style>

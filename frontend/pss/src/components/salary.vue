@@ -73,7 +73,8 @@
                 </div>
             </fieldset>
         </div>
-        <div class="show-edit">
+
+        n        <div class="show-edit">
 
             <div id="worked" v-for="(item, index) in selectedWeek" v-bind:key="item.salaryDate">
                 <worked-day :date="selectedWeek[index]"  @remove="erase" @edit="editing"></worked-day>
@@ -213,6 +214,11 @@
                 lockedWeek: false,
                 unlockedWeek: true,
                 lockedWeeks: [],
+                pot:{
+                    actual: [],
+                    reg:[]
+                },
+                editOldPot:"",
                 weekData:{
                     today: new Date(),
                     weekDays:['monday','tuesday','wednesday', 'thursday', 'friday','saturday','sunday'],
@@ -225,7 +231,8 @@
             }
         },
         mounted(){
-            this.gettingWeekInfo()
+            this.gettingWeekInfo();
+            this.getPot();
         },
        /* updated(){
             this.gettingWeekInfo()
@@ -416,6 +423,23 @@
                         .then(data => {
                             console.log('Success:', data);
                             this.gettingWeekInfo();
+                            var old = 0;
+                            var income = day.salaryIncome;
+                            if(this.pot.actual.length === 0 || this.pot.actual[0].potWatchNewPot === null){
+                                 old = 0;
+                            }else if (this.pot.actual.length > 0 || this.pot.actual[0].potWatchNewPot !== null){
+                                 old = this.pot.actual[0].potWatchNewPot;
+                            }
+                            var increase = {
+                                potWatchUserId: this.user[0].usersId,
+                                potWatchDate: this.formatDate(new Date()),
+                                potWatchType: 'input',
+                                potWatchAmount: income,
+                                potWatchOldPot: old,
+                                potWatchNewPot: old + income
+                            };
+                            console.log(increase);
+                            this.inputPot(increase);
 
                         })
                         .catch((error) => {
@@ -439,13 +463,14 @@
                     this.refreshWeek++
                 }
             },
-            editing: function(data){
+            editing: function(data, oldPotV){
                 this.beforeProject = JSON.parse(JSON.stringify(this.projectCode));
                 this.editId = data.salaryId;
                 this.workDate = data.salaryDate;
                 this.projectCode = data.salaryProject;
                 this.priceHour = data.salaryHourFare;
                 this.workedHours = data.salaryWorkedHours;
+                this.editOldPot = oldPotV;
                 this.edit = true;
 
             },
@@ -466,8 +491,9 @@
                 else if (this.workedHours == "" || this.workedHours == 0 || this.workedHours == null) {
                     alert("Please enter an amount of hours worked")
                 } else {
-
-                fetch('http://127.0.0.1:3000/api/salary/' + this.editId, {
+                    var inc = JSON.parse(JSON.stringify(this.priceHour * this.workedHours));
+                    console.log('inc = '+inc+'')
+                    fetch('http://127.0.0.1:3000/api/salary/' + this.editId, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -484,6 +510,7 @@
                     .then(data => {
                         console.log('Success PUT:', data);
                         this.gettingWeekInfo();
+                        this.editPot(inc);
 
                     })
                     .catch((error) => {
@@ -499,9 +526,10 @@
 
             }
             },
-            erase: function(){
-                this.gettingWeekInfo()
-                this.refreshWeek++
+            erase: function(decrease){
+                this.gettingWeekInfo();
+                this.refreshWeek++;
+                this.outputPot(decrease)
             },
             lockWeek: function(){
                 this.refreshWeek++;
@@ -1036,6 +1064,137 @@
 
                 }
                 return style
+            },
+            getPot: function(){
+                let url = new URL('http://127.0.0.1:3000/api/potWatch')
+                let params = {
+                    id: this.user[0].usersId,
+                };
+                url.search = new URLSearchParams(params).toString()
+
+                fetch(url)//+this.user[0].usersId)
+                    .then((response) => {
+                        return response.json();
+                    })
+                    .then((data) => {
+                        console.log(data.potWatch);
+                        this.pot.reg = data.potWatch;
+
+                    });
+                let url2 = new URL('http://127.0.0.1:3000/api/potWatch/actual')
+                let params2 = {
+                    id: this.user[0].usersId,
+                };
+                url2.search = new URLSearchParams(params2).toString()
+                fetch(url2)//+this.user[0].usersId)
+                    .then((response) => {
+                        return response.json();
+                    })
+                    .then((data) => {
+                        console.log(data.potWatch);
+                        this.pot.actual = data.potWatch;
+
+                    });
+            },
+            inputPot: function(increase){
+                fetch('http://127.0.0.1:3000/api/potWatch/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(increase)
+                }).then(response => response.json())
+                    .then(data => {
+                        console.log('Success:', data);
+                        this.$emit('update')
+                        this.getPot();
+
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+                console.log(increase)
+            },
+            outputPot: function(decrease){
+                var old = 0;
+                var income = decrease * -1;
+                if(this.pot.actual.length === 0 || this.pot.actual[0].potWatchNewPot === null){
+                    old = 0;
+                }else if (this.pot.actual.length > 0 || this.pot.actual[0].potWatchNewPot !== null){
+                    old = this.pot.actual[0].potWatchNewPot;
+                }
+                var rest = {
+                    potWatchUserId: this.user[0].usersId,
+                    potWatchDate: this.formatDate(new Date()),
+                    potWatchType: 'output',
+                    potWatchAmount: income,
+                    potWatchOldPot: old,
+                    potWatchNewPot: old + income
+                };
+                fetch('http://127.0.0.1:3000/api/potWatch/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(rest)
+                }).then(response => response.json())
+                    .then(data => {
+                        console.log('Success:', data);
+                        this.$emit('update')
+                        this.getPot();
+
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+
+            },
+            editPot: function(inc){
+                var dif = (inc) - (this.editOldPot);
+                var editType = "";
+                if(dif > 0){
+                    editType = "edit/input";
+                }
+                if(dif < 0){
+                    editType = "edit/output";
+                }else if (dif === 0){
+                    editType = "edit/zero"
+                }
+                console.log( dif, editType);
+                var old = 0;
+                if(this.pot.actual.length === 0 || this.pot.actual[0].potWatchNewPot === null){
+                    old = 0;
+                }else if (this.pot.actual.length > 0 || this.pot.actual[0].potWatchNewPot !== null){
+                    old = this.pot.actual[0].potWatchNewPot;
+                }
+                var edited ={
+                    potWatchUserId: this.user[0].usersId,
+                    potWatchDate: this.formatDate(new Date()),
+                    potWatchType: editType,
+                    potWatchAmount: dif,
+                    potWatchOldPot: old,
+                    potWatchNewPot: old + dif
+                };
+                fetch('http://127.0.0.1:3000/api/potWatch/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(edited)
+                }).then(response => response.json())
+                    .then(data => {
+                        console.log('Success:', data);
+                        this.$emit('update')
+                        this.getPot();
+                        this.editOldPot = "";
+
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+
+
+
             }
 
         }

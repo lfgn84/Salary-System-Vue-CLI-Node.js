@@ -12,7 +12,10 @@
             <li><p1>PN: </p1><p2>{{user[0].usersPN}}</p2></li>
             <li><p1>e-mail: </p1><p2>{{user[0].usersEmail}}</p2></li>
             <li><p1>PSS id: </p1><p2>{{user[0].usersId}}</p2></li>
-            <li><p1>Income Pot: </p1> <p2 id="pot">{{pot[0].pot.toLocaleString('en-US')}} kr</p2></li>
+            <li><p1>Income Pot: </p1> <p2 id="pot" v-if="pot.actual.length > 0"  v-bind:class="{'potPlus': pot.actual[0].potWatchNewPot > 0, 'potMinus': pot.actual[0].potWatchNewPot < 0}">{{pot.actual[0].potWatchNewPot.toLocaleString('en-US')}} kr</p2>
+                <p2 id="pot" v-else-if="pot.actual.length === 0">0</p2>
+
+            </li>
             <li>
                 <router-link class="button is-medium"
                         :to="{name:'LogIn'}" @click="logOut"> Log Out
@@ -21,7 +24,7 @@
             </li>
             <li>
                 <router-link class="button is-medium"
-                             :to="{name:'salaryInfo', params:{user: this.user[0]}}"> User's salary information
+                             :to="{name:'salaryInfo', params:{user: this.user[0]}}" > User's salary information
                 </router-link>
                 <!--                <button class="button is-medium" @click="logOut">Log Out</button>-->
             </li>
@@ -50,7 +53,10 @@
         data: function () {
             return {
                 user: [],
-                pot: []
+                pot:{
+                    actual: [],
+                    reg:[]
+                }
 
             }
         },
@@ -68,6 +74,7 @@
                 .then((data) => {
                     console.log(data.users);
                     this.user = data.users;
+                    sessionStorage.setItem('user', JSON.stringify(this.user[0]))
                 });
 
         },
@@ -78,7 +85,7 @@
         },
         methods:{
         updatePot: function() {
-            var url = new URL('http://127.0.0.1:3000/api/salary/pot');
+            var url = new URL('http://127.0.0.1:3000/api/potWatch/actual/');
             var params = {
                 id: this.user[0].usersId
             };
@@ -89,9 +96,25 @@
                     return response.json();
                 })
                 .then((data) => {
-                    console.log(data.salary);
-                    this.pot = data.salary;
+                    console.log(data.potWatch);
+                    this.pot.actual = data.potWatch;
+
                 });
+            var url2 = new URL('http://127.0.0.1:3000/api/potWatch/');
+            var params2 = {
+                id: this.user[0].usersId
+            };
+            url2.search = new URLSearchParams(params2).toString();
+            console.log(url2)
+            fetch(url2)
+                .then((response) => {
+                    return response.json();
+                })
+                .then((data) => {
+                    console.log(data.potWatch);
+                    this.pot.reg = data.potWatch;
+                });
+
 
 
         },
@@ -143,10 +166,17 @@
     ul {
 
     }
-        #pot{
+        .potPlus{
             border: solid thick lightblue;
             background-color: #42b983;
             color: white;
+            padding-right: 15px;
+            padding-left: 5px;
+        }
+        .potMinus{
+            border: solid thick lightcoral;
+            background-color: lightpink;
+            color: red;
             padding-right: 15px;
             padding-left: 5px;
         }

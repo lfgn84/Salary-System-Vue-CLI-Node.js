@@ -5,6 +5,7 @@ var usersdb = require("./usersdb.js")
 var passwordsdb = require("./passwordsdb.js")
 var salarydb = require("./salarydb.js")
 var lockedWeeksdb = require("./lockedWeeksdb")
+var potWatchdb = require("./potWatch")
 
 app.use(cors())
 app.use(express.static('public'))
@@ -74,6 +75,21 @@ app.get("/api/users", (req, res, next) => {
         })
     });
 });
+app.get("/api/users/list", (req, res, next) => {
+    var sql = "select usersId, usersName, usersLastName from users"
+    var params = []
+    usersdb.all(sql, params, (err, rows) => {
+        if (err) {
+            res.status(400).json({"error": err.message});
+            return;
+        }
+        res.json({
+            "message": "success",
+            "users": rows
+        })
+    });
+});
+
 
 app.get("/api/users/user", (req, res, next) => {
     var params = [req.query.mail]
@@ -513,8 +529,8 @@ app.patch("/api/salary/unlock", (req, res, next) => {
 });
 app.get("/api/salary/workedHours",(req, res, next) => {
     console.log('gettin locked ('+req.query.locked+') period from: ' + req.query.startDay +" to: "+req.query.endDay + " ID:  "+ req.query.id );
-    var params = [req.query.startDay, req.query.endDay, req.query.id, req.query.locked]
-    var sql = "select sum(salaryWorkedHours) as workedHours from salary where (salaryDate between ? and ? ) and salaryUserId = ? and salaryUserLocked = ?"
+    var params = [req.query.startDay, req.query.endDay, req.query.id, req.query.locked];
+    var sql = "select sum(salaryWorkedHours) as workedHours from salary where (salaryDate between ? and ? ) and salaryUserId = ? and salaryUserLocked = ?";
     salarydb.all(sql,params, (err, rows) =>{
         if (err){
             res.status(400).jason({"err": err.message});
@@ -608,4 +624,122 @@ app.delete("/api/salary/:id", (req, res, next) => {
             res.json({"message": "deleted", rows: this.changes})
         });
 });
+app.get("/api/potWatch", (req, res, next) => {
+    var params = [req.query.id];
+    var sql = "select * from potWatch where potWatchUserId = ?"
+    potWatchdb.all(sql,params, (err, rows) =>{
+        if (err){
+            res.status(400).jason({"err": err.message});
+            return;
+        }
+        res.json({
+            "message":"success",
+            "potWatch": rows
+        })
+    });
+});
+app.post("/api/potWatch", (req, res, next) =>{
+    var errors = []
+    var data = {
+        potWatchUserId: req.body.potWatchUserId,
+        potWatchDate: req.body.potWatchDate,
+        potWatchType: req.body.potWatchType,
+        potWatchAmount: req.body.potWatchAmount,
+        potWatchOldPot: req.body.potWatchOldPot,
+        potWatchNewPot: req.body.potWatchNewPot
+
+    };
+    var sql = `INSERT INTO potWatch (
+                potWatchUserId,
+                potWatchDate,
+                potWatchType,
+                potWatchAmount,
+                potWatchOldPot,
+                potWatchNewPot
+                ) VALUES (?,?,?,?,?,?)`
+    var params = [data.potWatchUserId,
+        data.potWatchDate,
+        data.potWatchType,
+        data.potWatchAmount,
+        data.potWatchOldPot,
+        data.potWatchNewPot]
+    potWatchdb.run(sql, params, function (err, result) {
+        if (err) {
+            res.status(400).json({"error": err.message})
+            return;
+        }
+        res.json({
+            "message": "success",
+            "potWatch": data,
+            "id": this.lastID
+        })
+
+    })
+});
+app.delete("/api/potWatch/:id", (req, res, next) => {
+    var sql = `DELETE FROM potWatch WHERE 
+                potWatchId = ?`;
+    var params = [req.params.id];
+    potWatchdb.all(sql, params, function (err, result) {
+        if (err) {
+            res.status(400).json({"error": res.message})
+            return;
+        }
+        res.json({"message": "deleted", rows: this.changes})
+    });
+});
+app.patch("/api/potWatch/:id", (req, res, next) => {
+    var errors = []
+    if (!req.body.potWatchUserId || !req.body.potWatchDate || !req.body.potWatchAmount || !req.body.potWatchOldPot || !req.body.potWatchNewPot) {
+        errors.push("No valid object");
+    }
+    var data = {
+        potWatchUserId: req.body.potWatchUserId,
+        potWatchDate: req.body.potWatchDate,
+        potWatchAmount: req.body.potWatchAmount,
+        potWatchOldPot: req.body.potWatchOldPot,
+        potWatchNewPot: req.body.potWatchNewPot
+    };
+    var params = [
+        data.potWatchAmount,
+        data.potWatchOldPot,
+        data.potWatchNewPot,
+        data.potWatchUserId,
+        req.params.id,
+        data.potWatchDate
+    ];
+    var sql = `UPDATE potWatch SET
+                potWatchAmount = ?,
+                potWatchOldPot = ?,
+                potWatchNewPot = ?
+                where potWatchUserId = ? and potWatchId = ? and potWatchDate = ?`
+    salarydb.run(sql, params, function (err, result) {
+        if (err) {
+            res.status(400).json({"error": err.message})
+            return;
+        }
+        res.json({
+            "message": "success",
+            "potWatch": data,
+            "id": this.lastID
+        })
+
+    })
+});
+app.get("/api/potWatch/actual", (req, res, next) => {
+    var params = [req.query.id];
+    var sql = "SELECT potWatchNewPot FROM potWatch where potWatchUserId = ? order by potWatchId desc limit 1"
+    potWatchdb.all(sql,params, (err, rows) =>{
+        if (err){
+            res.status(400).json({"err": err.message});
+            return;
+        }
+        res.json({
+            "message":"success",
+            "potWatch": rows
+        })
+    });
+});
+
+
 

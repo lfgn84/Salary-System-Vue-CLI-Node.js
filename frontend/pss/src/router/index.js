@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import LogIn from '../views/LogIn.vue'
 import Home from '../views/Home.vue'
 import salaryInfo from "../views/salaryInfo";
+import checkOutUser from "../views/checkOutUser";
 Vue.use(VueRouter)
 
   const routes = [
@@ -15,6 +16,11 @@ Vue.use(VueRouter)
    path:'/salaryInfo',
    name: 'salaryInfo',
    component: salaryInfo
+  },
+  {
+    path: '/checkOutUser',
+    name: 'checkOutUser',
+    component: checkOutUser
   },
   {
     path:'/Home',

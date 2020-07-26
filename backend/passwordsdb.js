@@ -1,4 +1,4 @@
-var sqlite3 = require('sqlite3').verbose()
+var sqlite3 = require('sqlite3').verbose();
 
 const DBSOURCE = "passwords.db"
 
@@ -9,7 +9,7 @@ let passdb = new sqlite3.Database(DBSOURCE, (err) => {
         console.error(err.message)
         throw err
     } else {
-        console.log('Connected to the "passwords" SQlite database.')
+        console.log('Connected to the "passwords" SQlite database.');
         passdb.run(`CREATE TABLE passwords (
             passwordsId INTEGER PRIMARY KEY,
             passwordsMail TEXT,
@@ -28,7 +28,7 @@ let passdb = new sqlite3.Database(DBSOURCE, (err) => {
             }
         })
     }
-})
+});
 
 
 module.exports = passdb
