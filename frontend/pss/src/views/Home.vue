@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <users :email="email"></users>
+    <users :email="email" :user-mode="true" :check-out-mode="false"></users>
   </div>
 </template>
 
@@ -11,7 +11,7 @@ import users from "../components/users";
 export default {
   name: 'Home',
   components: {
-    users,
+    users
 
   },
   data: function(){

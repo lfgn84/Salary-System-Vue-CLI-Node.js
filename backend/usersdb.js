@@ -24,6 +24,7 @@ let usersdb = new sqlite3.Database(DBSOURCE, (err) => {
             usersLastCostumer TEXT,
             usersPriceHour REAL,
             usersPctLevel REAL,
+            usersSalaryHour REAL,
             usersBruttoSalary REAL,
             usersEmployeerFee REAL,
             usersPaidVacation REAL,
@@ -55,6 +56,7 @@ let usersdb = new sqlite3.Database(DBSOURCE, (err) => {
                 usersLastCostumer,
                 usersPriceHour,
                 usersPctLevel,
+                usersSalaryHour,
                 usersBruttoSalary,
                 usersEmployeerFee,
                 usersPaidVacation,
@@ -66,10 +68,10 @@ let usersdb = new sqlite3.Database(DBSOURCE, (err) => {
                 usersMobile,
                 usersLaptop,
                 usersMiscHardware,
-                usersMisc) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
-                usersdb.run(insert, [0, "user", "Luis", "Gutierrez", "841026", "lfgn84@gmail.com", "0703487596", "2020-03-26", "PSS", "Prodeff", "Prodeff", 478, 0.65, 20000, 0.3142, 0.12, 0, 0, 0.33, 0, 0, 0, 0, 0, 0])
-                usersdb.run(insert, [1, "owner", "Allen", "Kalasho", "921026", "allen@prodeff.com", "078976662", "2015-08-12", "PSS", "Volvo Cars", "Stena Line", 478, 0.80, 60000, 0.3142, 0.12, 0, 0, 0.33, 0, 0, 0, 0, 0, 0])
-                usersdb.run(insert, [2, "admin", "Clara", "Löfgren", "950512", "clara@prodeff.com", "071234567", "2019-02-19", "Volvo Cars", "Volvo Cars", "Stena Line", 478, 0.75, 40000, 0.3142, 0.12, 0, 0, 0.33, 0, 0, 0, 0, 0, 0])
+                usersMisc) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+                usersdb.run(insert, [0, "user", "Luis", "Gutierrez", "841026", "lfgn84@gmail.com", "0703487596", "2020-03-26", "PSS", "Prodeff", "Prodeff", 478, 0.65, 310.7, 20000, 0.3142, 0.12, 0, 0, 0.33, 0, 0, 0, 0, 0, 0])
+                usersdb.run(insert, [1, "owner", "Allen", "Kalasho", "921026", "allen@prodeff.com", "078976662", "2015-08-12", "PSS", "Volvo Cars", "Stena Line", 478, 0.80, 382.4, 60000, 0.3142, 0.12, 0, 0, 0.33, 0, 0, 0, 0, 0, 0])
+                usersdb.run(insert, [2, "admin", "Clara", "Löfgren", "950512", "clara@prodeff.com", "071234567", "2019-02-19", "Volvo Cars", "Volvo Cars", "Stena Line", 478, 0.75, 358.5, 40000, 0.3142, 0.12, 0, 0, 0.33, 0, 0, 0, 0, 0, 0])
             }
         })
     }

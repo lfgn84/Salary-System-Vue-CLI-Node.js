@@ -97,9 +97,11 @@
                         <div class="content">
                             <li> {{workDate}}<span style="font-weight: bold"> : DAY WORKED</span></li>
                             <li> {{projectCode}} <span style="font-weight: bold"> : PROJECT CODE</span></li>
-                            <li><input type="number" min="0" v-model="priceHour"><span style="font-weight: bold"> : PRICE PER WORKED HOUR</span></li>
+                            <li>  {{priceHour}} kr<span style="font-weight: bold"> : PRICE PER WORKED HOUR</span></li>
+                            <li>  {{salaryHour}} kr<span style="font-weight: bold"> : INCOME PER WORKED HOUR</span></li>
                             <li><input type="number" min="0" v-model="workedHours"><span style="font-weight: bold"> : WORKED HOURS</span></li>
-                            <li><span>{{daySalary}}</span><span style="font-weight: bold"> DAY INCOME</span></li>
+                            <li><span>{{(dayCost).toLocaleString('en-US')}} kr</span><span style="font-weight: bold"> DAY PRICE</span></li>
+                            <li><span>{{(daySalary).toLocaleString('en-US')}} kr</span><span style="font-weight: bold"> DAY INCOME</span></li>
                             <li><span>{{prevent}}</span></li>
                             <br>
                         </div>
@@ -124,9 +126,11 @@
                         <div class="content">
                             <li> {{workDate}}<span style="font-weight: bold"> : DAY WORKED</span></li>
                             <li> {{projectCode}} <span style="font-weight: bold"> : PROJECT CODE</span></li>
-                            <li><input type="number" min="0" v-model="priceHour"><span style="font-weight: bold"> : PRICE PER WORKED HOUR</span></li>
+                            <li>  {{priceHour}} kr<span style="font-weight: bold"> : PRICE PER WORKED HOUR</span></li>
+                            <li>  {{salaryHour}} kr<span style="font-weight: bold"> : INCOME PER WORKED HOUR</span></li>
                             <li><input type="number" min="0" v-model="workedHours"><span style="font-weight: bold"> : WORKED HOURS</span></li>
-                            <li><span>{{daySalary}}</span><span style="font-weight: bold"> DAY INCOME</span></li>
+                            <li><span>{{dayCost.toLocaleString('en-US')}}</span><span style="font-weight: bold"> DAY PRICE</span></li>
+                            <li><span>{{daySalary.toLocaleString('en-US')}}</span><span style="font-weight: bold"> DAY INCOME</span></li>
                             <li><span>{{prevent}}</span></li>
                             <br>
                         </div>
@@ -198,8 +202,11 @@
                 workDate : null,
                 projectCodes:[{project: ""},{project:'PSS'}, {project:'Stena Line'}, {project: 'Volvo'}],
                 projectCode:"",
-                priceHour:479,
+                priceHour:"",
                 workedHours:"",
+                pctRange:"",
+                salaryHour: "",
+                salaryCost: "",
                 workedDays:[],
                 selectedDays:[],
                 selectedDay:[],
@@ -233,6 +240,10 @@
         mounted(){
             this.gettingWeekInfo();
             this.getPot();
+            this.priceHour = this.user[0].usersPriceHour;
+            this.pctRange = this.user[0].usersPctLevel;
+            this.salaryHour = this.user[0].usersSalaryHour;
+
         },
        /* updated(){
             this.gettingWeekInfo()
@@ -319,8 +330,12 @@
         },
         computed:{
             daySalary(){
+                return this.salaryHour * this.workedHours
+            },
+            dayCost(){
                 return this.priceHour * this.workedHours
             }
+
         },
         watch: {
             input: function () {
@@ -387,7 +402,7 @@
         methods:{
             calcDay: function() {
 
-                if(this.workDate == "" && this.projectCode == "" && this.priceHour != 479 && this.workedHours == "" ){
+                if(this.workDate == "" && this.projectCode == "" && this.priceHour == "" && this.workedHours == "" ){
                     alert( "Please enter working day information")
                 }
 
@@ -397,7 +412,7 @@
                 else if (this.projectCode == "" || this.projectCode == null) {
                     alert("Please enter working date project code")
                 }
-                 else if (this.priceHour != 479 || this.priceHour == 0 || this.priceHour == null) {
+                 else if ( this.priceHour == 0 || this.priceHour == null) {
                     alert("Please enter correct hour fare")
                 }
                 else if (this.workedHours == "" || this.workedHours == 0 || this.workedHours == null) {
@@ -408,8 +423,10 @@
                         salaryDate: this.workDate,
                         salaryProject: this.projectCode,
                         salaryHourFare: this.priceHour,
+                        salaryHour: this.salaryHour,
                         salaryWorkedHours: this.workedHours,
-                        salaryIncome: this.priceHour * this.workedHours,
+                        salaryCost: this.priceHour * this.workedHours,
+                        salaryIncome: this.salaryHour * this.workedHours,
                         salaryUserLocked: false,
                         salaryAdminLocked: false
                     }
@@ -421,7 +438,7 @@
                         body: JSON.stringify(day)
                     }).then(response => response.json())
                         .then(data => {
-                            console.log('Success:', data);
+                            console.log('Success:', data, day);
                             this.gettingWeekInfo();
                             var old = 0;
                             var income = day.salaryIncome;
@@ -432,7 +449,7 @@
                             }
                             var increase = {
                                 potWatchUserId: this.user[0].usersId,
-                                potWatchDate: this.formatDate(new Date()),
+                                potWatchDate: day.salaryDate,
                                 potWatchType: 'input',
                                 potWatchAmount: income,
                                 potWatchOldPot: old,
@@ -457,7 +474,6 @@
                     this.workedDays.push(day);
                     this.workDate = "";
                     // this.projectCode = "";
-                    this.priceHour = 479;
                     this.workedHours = "";
                     this.input = false;
                     this.refreshWeek++
@@ -469,13 +485,14 @@
                 this.workDate = data.salaryDate;
                 this.projectCode = data.salaryProject;
                 this.priceHour = data.salaryHourFare;
+                this.salaryHour = data.salaryHour;
                 this.workedHours = data.salaryWorkedHours;
                 this.editOldPot = oldPotV;
                 this.edit = true;
 
             },
             change: function() {
-                if(this.workDate == "" && this.projectCode == "" && this.priceHour != 479 && this.workedHours == "" ){
+                if(this.workDate == "" && this.projectCode == "" && this.priceHour =="" && this.workedHours == "" ){
                     alert( "Please enter working day information")
                 }
 
@@ -485,27 +502,31 @@
                 else if (this.projectCode == "" || this.projectCode == null) {
                     alert("Please enter working date project code")
                 }
-                else if (this.priceHour != 479 || this.priceHour == 0 || this.priceHour == null) {
+                else if ( this.priceHour == 0 || this.priceHour == null) {
                     alert("Please enter correct hour fare")
                 }
                 else if (this.workedHours == "" || this.workedHours == 0 || this.workedHours == null) {
                     alert("Please enter an amount of hours worked")
                 } else {
-                    var inc = JSON.parse(JSON.stringify(this.priceHour * this.workedHours));
+                    var inc = JSON.parse(JSON.stringify(this.salaryHour * this.workedHours));
                     console.log('inc = '+inc+'')
-                    fetch('http://127.0.0.1:3000/api/salary/' + this.editId, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
+                    let editDay = {
                         salaryUserId: this.user[0].usersId,
                         salaryDate: this.workDate,
                         salaryProject: this.projectCode,
                         salaryHourFare: this.priceHour,
+                        salaryHour: this.salaryHour,
                         salaryWorkedHours: this.workedHours,
-                        salaryIncome: this.priceHour * this.workedHours
-                    }),
+                        salaryCost: this.priceHour * this.workedHours,
+                        salaryIncome: this.salaryHour * this.workedHours
+                    };
+                    console.log(editDay);
+                    fetch('http://127.0.0.1:3000/api/salary/' + this.editId +"", {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(editDay),
                 }).then(response => response.json())
                     .then(data => {
                         console.log('Success PUT:', data);
@@ -518,7 +539,6 @@
                     });
                 this.workDate = "";
                 this.projectCode = JSON.parse(JSON.stringify(this.beforeProject));
-                this.priceHour = 479;
                 this.workedHours = "";
                 this.edit = false;
                 this.beforeProject = "";
@@ -527,9 +547,9 @@
             }
             },
             erase: function(decrease){
+                this.outputPot(decrease);
                 this.gettingWeekInfo();
                 this.refreshWeek++;
-                this.outputPot(decrease)
             },
             lockWeek: function(){
                 this.refreshWeek++;
@@ -1117,7 +1137,7 @@
             },
             outputPot: function(decrease){
                 var old = 0;
-                var income = decrease * -1;
+                var income = decrease.amount * -1;
                 if(this.pot.actual.length === 0 || this.pot.actual[0].potWatchNewPot === null){
                     old = 0;
                 }else if (this.pot.actual.length > 0 || this.pot.actual[0].potWatchNewPot !== null){
@@ -1125,7 +1145,7 @@
                 }
                 var rest = {
                     potWatchUserId: this.user[0].usersId,
-                    potWatchDate: this.formatDate(new Date()),
+                    potWatchDate: decrease.date,
                     potWatchType: 'output',
                     potWatchAmount: income,
                     potWatchOldPot: old,
@@ -1169,7 +1189,7 @@
                 }
                 var edited ={
                     potWatchUserId: this.user[0].usersId,
-                    potWatchDate: this.formatDate(new Date()),
+                    potWatchDate: this.workDate,
                     potWatchType: editType,
                     potWatchAmount: dif,
                     potWatchOldPot: old,

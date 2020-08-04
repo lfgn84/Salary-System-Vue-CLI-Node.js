@@ -76,7 +76,7 @@ app.get("/api/users", (req, res, next) => {
     });
 });
 app.get("/api/users/list", (req, res, next) => {
-    var sql = "select usersId, usersName, usersLastName from users"
+    var sql = "select usersId, usersName, usersLastName, usersEmail from users"
     var params = []
     usersdb.all(sql, params, (err, rows) => {
         if (err) {
@@ -142,6 +142,7 @@ app.post("/api/users/", (req, res, next) => {
         usersLastCostumer: req.body.usersLastCostumer,
         usersPriceHour: req.body.usersPriceHour,
         usersPctLevel: req.body.usersPctLevel,
+        usersSalaryHour: req.body.usersSalaryHour,
         usersBruttoSalary: req.body.usersBruttoSalary,
         usersEmployeerFee: req.body.usersEmployeerFee,
         usersPaidVacation: req.body.usersPaidVacation,
@@ -168,6 +169,7 @@ app.post("/api/users/", (req, res, next) => {
                 usersLastCostumer,
                 usersPriceHour,
                 usersPctLevel,
+                usersSalaryHour,
                 usersBruttoSalary,
                 usersEmployeerFee,
                 usersPaidVacation,
@@ -179,7 +181,7 @@ app.post("/api/users/", (req, res, next) => {
                 usersMobile,
                 usersLaptop,
                 usersMiscHardware,
-                usersMisc) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+                usersMisc) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
     var params = [data.usersRange,
         data.usersName,
         data.usersLastName,
@@ -192,6 +194,7 @@ app.post("/api/users/", (req, res, next) => {
         data.usersLastCostumer,
         data.usersPriceHour,
         data.usersPctLevel,
+        data.usersSalaryHour,
         data.usersBruttoSalary,
         data.usersEmployeerFee,
         data.usersPaidVacation,
@@ -231,6 +234,7 @@ app.put("/api/users/:id", (req, res, next) => {
         usersLastCostumer: req.body.usersLastCostumer,
         usersPriceHour: req.body.usersPriceHour,
         usersPctLevel: req.body.usersPctLevel,
+        usersSalaryHour: req.body.usersSalaryHour,
         usersBruttoSalary: req.body.usersBruttoSalary,
         usersEmployeerFee: req.body.usersEmployeerFee,
         usersPaidVacation: req.body.usersPaidVacation,
@@ -257,6 +261,7 @@ app.put("/api/users/:id", (req, res, next) => {
                 usersLastCostumer = ?,
                 usersPriceHour = ?,
                 usersPctLevel = ?,
+                usersSalaryHour = ?,
                 usersBruttoSalary = ?,
                 usersEmployeerFee = ?,
                 usersPaidVacation = ?,
@@ -282,6 +287,7 @@ app.put("/api/users/:id", (req, res, next) => {
         data.usersLastCostumer,
         data.usersPriceHour,
         data.usersPctLevel,
+        data.usersSalaryHour,
         data.usersBruttoSalary,
         data.usersEmployeerFee,
         data.usersPaidVacation,
@@ -366,7 +372,7 @@ app.get("/api/salary/day",(req, res, next) => {
 });
 app.get("/api/salary/pot",(req,res,next)=>{
     var params = [req.query.id];
-    var sql = "select sum(salaryIncome) as pot from salary where salaryUserId = ? "
+    var sql = "select sum(salaryCost) as pot from salary where salaryUserId = ? "
     salarydb.all(sql,params,(err,rows)=>{
         if(err){
             res.status(400).jason({"err": err.message});
@@ -388,7 +394,9 @@ app.post("/api/salary", (req, res, next) => {
         salaryDate: req.body.salaryDate,
         salaryProject: req.body.salaryProject,
         salaryHourFare: req.body.salaryHourFare,
+        salaryHour: req.body.salaryHour,
         salaryWorkedHours: req.body.salaryWorkedHours,
+        salaryCost: req.body.salaryCost,
         salaryIncome: req.body.salaryIncome,
         salaryUserLocked: req.body.salaryUserLocked,
         salaryAdminLocked: req.body.salaryAdminLocked
@@ -398,16 +406,20 @@ app.post("/api/salary", (req, res, next) => {
                 salaryDate,
                 salaryProject,
                 salaryHourFare,
+                salaryHour,
                 salaryWorkedHours,
+                salaryCost,
                 salaryIncome,
                 salaryUserLocked,
                 salaryAdminLocked
-                ) VALUES (?,?,?,?,?,?,?,?)`
+                ) VALUES (?,?,?,?,?,?,?,?,?,?)`
     var params = [data.salaryUserId,
                   data.salaryDate,
                   data.salaryProject,
                   data.salaryHourFare,
+                  data.salaryHour,
                   data.salaryWorkedHours,
+                  data.salaryCost,
                   data.salaryIncome,
                   data.salaryUserLocked,
                   data.salaryAdminLocked
@@ -427,7 +439,7 @@ app.post("/api/salary", (req, res, next) => {
 });
 app.put("/api/salary/:id", (req, res, next) => {
     var errors = []
-    if (!req.body.salaryUserId || !req.body.salaryDate || !req.body.salaryProject || !req.body.salaryHourFare || !req.body.salaryWorkedHours || !req.body.salaryIncome) {
+    if (!req.body.salaryUserId || !req.body.salaryDate || !req.body.salaryProject || !req.body.salaryHourFare|| !req.body.salaryHour || !req.body.salaryWorkedHours || !req.body.salaryCost ||!req.body.salaryIncome) {
         errors.push("No valid object");
     }
     var data = {
@@ -435,7 +447,9 @@ app.put("/api/salary/:id", (req, res, next) => {
         salaryDate: req.body.salaryDate,
         salaryProject: req.body.salaryProject,
         salaryHourFare: req.body.salaryHourFare,
+        salaryHour: req.body.salaryHour,
         salaryWorkedHours: req.body.salaryWorkedHours,
+        salaryCost: req.body.salaryCost,
         salaryIncome: req.body.salaryIncome
     };
     var params = [
@@ -443,7 +457,9 @@ app.put("/api/salary/:id", (req, res, next) => {
         data.salaryDate,
         data.salaryProject,
         data.salaryHourFare,
+        data.salaryHour,
         data.salaryWorkedHours,
+        data.salaryCost,
         data.salaryIncome,
         req.params.id];
     var sql = `UPDATE salary SET
@@ -451,9 +467,11 @@ app.put("/api/salary/:id", (req, res, next) => {
                 salaryDate = ?,
                 salaryProject = ?,
                 salaryHourFare = ?,
+                salaryHour = ?,
                 salaryWorkedHours = ?,
+                salaryCost = ?,
                 salaryIncome = ?
-                where salaryId = ?`
+                where salaryId = ?`;
     salarydb.run(sql, params, function (err, result) {
         if (err) {
             res.status(400).json({"error": err.message})

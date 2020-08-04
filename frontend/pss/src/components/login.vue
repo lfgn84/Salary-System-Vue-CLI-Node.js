@@ -62,9 +62,9 @@
                     .catch((error) => {
                     console.error('Error:', error);
                 });
-                if(this.inputPass == this.pass){
+                if(this.inputPass == this.pass && this.inputPass !== "" && this.pass !==""){
                     this.success = true
-                    sessionStorage.mail = this.inputMail
+                    sessionStorage.userMail = this.inputMail
                 }
 
             },

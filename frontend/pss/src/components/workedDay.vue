@@ -7,9 +7,11 @@
         </div>
         <div class="message-body">
             <div><span style=" font-weight: bold">PROJECT: </span> {{date.salaryProject}}</div>
-            <div><span style=" font-weight: bold">HOUR FARE: </span> {{date.salaryHourFare}}</div>
+            <div><span style=" font-weight: bold">HOUR FARE: </span> {{date.salaryHourFare}} kr</div>
+            <div><span style=" font-weight: bold">HOUR SALARY: </span> {{date.salaryHour}} kr</div>
             <div><span style=" font-weight: bold">WORKED HOURS: </span> {{date.salaryWorkedHours}}</div>
-            <div><span style=" font-weight: bold">TOTAL: </span>{{date.salaryIncome.toLocaleString('en-US')}} kr</div>
+            <div><span style=" font-weight: bold">TOTAL COST: </span>{{date.salaryCost.toLocaleString('en-US')}} kr</div>
+            <div><span style=" font-weight: bold">INCOME: </span> {{date.salaryIncome.toLocaleString('en-US')}} kr</div>
         </div>
         <footer>
 <!--            <button @click="edit">edit</button><button @click="erase">erase</button><button v-show="editing" @click="editing = false">ok</button>-->
@@ -23,9 +25,12 @@
             </div>
             <div class="message-body">
                 <div><span style=" font-weight: bold">PROJECT: </span> {{date.salaryProject}}</div>
-                <div><span style=" font-weight: bold">HOUR FARE: </span> {{date.salaryHourFare}}</div>
+                <div><span style=" font-weight: bold">HOUR FARE: </span> {{date.salaryHourFare}} kr</div>
+                <div><span style=" font-weight: bold">HOUR SALARY: </span> {{date.salaryHour}} kr</div>
                 <div><span style=" font-weight: bold">WORKED HOURS: </span> {{date.salaryWorkedHours}}</div>
-                <div><span style=" font-weight: bold">TOTAL: </span>{{date.salaryIncome.toLocaleString('en-US')}} kr</div>
+                <div><span style=" font-weight: bold">TOTAL COST: </span>{{date.salaryCost.toLocaleString('en-US')}} kr</div>
+                <div><span style=" font-weight: bold">INCOME: </span> {{date.salaryIncome.toLocaleString('en-US')}} kr</div>
+
             </div>
             <footer style="color: red">
                 LOCKED
@@ -76,7 +81,10 @@
                 }).then(response => response.json())
                     .then(data => {
                         console.log('Success:', data);
-                        var decrease = this.dayInfo.salaryIncome;
+                        var decrease = {
+                            date: this.dayInfo.salaryDate,
+                            amount : this.dayInfo.salaryIncome
+                        };
                         this.$emit('remove', decrease);
 
                     })
@@ -91,8 +99,10 @@
                     salaryDate: this.dayInfo.salaryDate,
                     salaryProject: this.dayInfo.salaryProject,
                     salaryHourFare: this.dayInfo.salaryHourFare,
-                    salaryWorkedHours: this.dayInfo.salaryWorkedHours,
-                    salaryIncome: this.dayInfo.salaryHourFare * this.dayInfo.salaryWorkedHours
+                    salaryHour: this.dayInfo.salaryHour,
+                    salaryWorkedHours: this.dayInfo.salaryWorkedHours
+                   // salaryCost: this.dayInfo.salaryHourFare * this.dayInfo.salaryWorkedHours,
+                  //  salaryIncome: this.dayInfo.salaryHour * this.dayInfo.salaryWorkedHours
 
                 };
                 let oldPotV = this.dayInfo.salaryIncome;

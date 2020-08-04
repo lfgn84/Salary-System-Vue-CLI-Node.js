@@ -67,7 +67,7 @@
                                     <li>
                                         <a class="is-active">Manage Your Team</a>
                                         <ul v-for="(index, item) in usersList" v-bind:key="index">
-                                            <user-list :userListed="usersList[item]"></user-list>
+                                            <user-list :userListed="usersList[item]" :checker="user"></user-list>
                                         </ul>
                                     </li>
                                 </ul>
@@ -231,7 +231,7 @@
                     </td>
                     <td>{{totalExpensCalc.toLocaleString('en-US')}} kr</td>
                     <td>{{totalIncomeCalc.toLocaleString('en-US')}} kr</td>
-                    <td v-if="pot.actual.length > 0">{{pot.actual[0].potWatchNewPot.toLocaleString('en-US')}} kr</td>
+                    <td v-if="pot.actual.length > 0">{{(pot.actual[0].potWatchNewPot).toLocaleString('en-US') }} kr</td>
                     <td v-else>0 </td>
                     <td></td>
                 </tr>

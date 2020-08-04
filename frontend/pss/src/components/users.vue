@@ -47,12 +47,15 @@
             salary
         },
         props: {
-            email: String
+            email: String,
+            userMode: Boolean,
+            checkOutMode: Boolean
 
         },
         data: function () {
             return {
                 user: [],
+
                 pot:{
                     actual: [],
                     reg:[]
@@ -61,7 +64,11 @@
             }
         },
         created() {
-            if(sessionStorage.mail) {this.email = sessionStorage.mail;}
+            if(sessionStorage.userMail && this.userMode) {
+                this.email = sessionStorage.userMail;
+            }else if (sessionStorage.checkOutMail && this.checkOutMode){
+                this.email = sessionStorage.checkOutMail
+            }
             var url = new URL('http://127.0.0.1:3000/api/users/user');
             var params = {
                 mail: this.email

@@ -31,7 +31,7 @@ let potWatchdb = new sqlite3.Database(DBSOURCE, (err) => {
                 potWatchOldPot,
                 potWatchNewPot 
                 ) VALUES (?,?,?,?,?,?)`;
-                potWatchdb.run(insert, [ 0, "2020-03-26", "input", 3824, 0, 3824]);
+                potWatchdb.run(insert, [ 0, "2020-03-26", "input",  2485.6, 0, 2485.6]);
             }
         })
     }
