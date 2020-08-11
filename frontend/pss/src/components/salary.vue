@@ -74,7 +74,7 @@
             </fieldset>
         </div>
 
-        n        <div class="show-edit">
+                <div class="show-edit">
 
             <div id="worked" v-for="(item, index) in selectedWeek" v-bind:key="item.salaryDate">
                 <worked-day :date="selectedWeek[index]"  @remove="erase" @edit="editing"></worked-day>
@@ -83,7 +83,7 @@
         </div>
         <button v-bind:class="{'button is-medium': !lockedWeek, 'button is-medium is-inverted is-outlined' : lockedWeek || selectedWeek.length < 1}" :disabled="lockedWeek || selectedWeek.length < 1"  @click="lockWeek">Lock Week</button>
 
-        <button v-bind:class="{'button is-medium': !unlockedWeek, 'button is-medium is-inverted is-outlined' : unlockedWeek || selectedWeek.length < 1 }" :disabled="unlockedWeek || selectedWeek.length < 1" @click="unlockWeek"  v-show="user[0].usersRange == 'owner' || user[0].usersRange == 'admin'">Unlock Week</button>
+        <button v-bind:class="{'button is-medium': !unlockedWeek, 'button is-medium is-inverted is-outlined' : unlockedWeek || selectedWeek.length < 1 }" :disabled="unlockedWeek || selectedWeek.length < 1" @click="unlockWeek"  v-show="user[0].usersRange == 'owner' || user[0].usersRange == 'admin' || adminMode">Unlock Week</button>
 
         <div class="modal is-active" v-show="input">
             <div class="modal-background"></div>
@@ -193,7 +193,8 @@
         name: "salary",
         components: {workedDay},
         props:{
-            user: [Object , Array]
+            user: [Object , Array],
+            adminMode: Boolean
         },
         data(){
             return{
@@ -221,11 +222,11 @@
                 lockedWeek: false,
                 unlockedWeek: true,
                 lockedWeeks: [],
-                pot:{
+               /* pot:{
                     actual: [],
                     reg:[]
                 },
-                editOldPot:"",
+                editOldPot:"",*/
                 weekData:{
                     today: new Date(),
                     weekDays:['monday','tuesday','wednesday', 'thursday', 'friday','saturday','sunday'],
@@ -239,7 +240,7 @@
         },
         mounted(){
             this.gettingWeekInfo();
-            this.getPot();
+            //this.getPot();
             this.priceHour = this.user[0].usersPriceHour;
             this.pctRange = this.user[0].usersPctLevel;
             this.salaryHour = this.user[0].usersSalaryHour;
@@ -440,7 +441,7 @@
                         .then(data => {
                             console.log('Success:', data, day);
                             this.gettingWeekInfo();
-                            var old = 0;
+                            /*var old = 0;
                             var income = day.salaryIncome;
                             if(this.pot.actual.length === 0 || this.pot.actual[0].potWatchNewPot === null){
                                  old = 0;
@@ -457,7 +458,7 @@
                             };
                             console.log(increase);
                             this.inputPot(increase);
-
+*/
                         })
                         .catch((error) => {
                             console.error('Error:', error);
@@ -479,7 +480,7 @@
                     this.refreshWeek++
                 }
             },
-            editing: function(data, oldPotV){
+            editing: function(data){
                 this.beforeProject = JSON.parse(JSON.stringify(this.projectCode));
                 this.editId = data.salaryId;
                 this.workDate = data.salaryDate;
@@ -487,7 +488,7 @@
                 this.priceHour = data.salaryHourFare;
                 this.salaryHour = data.salaryHour;
                 this.workedHours = data.salaryWorkedHours;
-                this.editOldPot = oldPotV;
+               // this.editOldPot = oldPotV;
                 this.edit = true;
 
             },
@@ -508,8 +509,8 @@
                 else if (this.workedHours == "" || this.workedHours == 0 || this.workedHours == null) {
                     alert("Please enter an amount of hours worked")
                 } else {
-                    var inc = JSON.parse(JSON.stringify(this.salaryHour * this.workedHours));
-                    console.log('inc = '+inc+'')
+                 //   var inc = JSON.parse(JSON.stringify(this.salaryHour * this.workedHours));
+                //    console.log('inc = '+inc+'')
                     let editDay = {
                         salaryUserId: this.user[0].usersId,
                         salaryDate: this.workDate,
@@ -531,7 +532,7 @@
                     .then(data => {
                         console.log('Success PUT:', data);
                         this.gettingWeekInfo();
-                        this.editPot(inc);
+                       // this.editPot(inc);
 
                     })
                     .catch((error) => {
@@ -545,9 +546,9 @@
                 this.refreshWeek++
 
             }
-            },
-            erase: function(decrease){
-                this.outputPot(decrease);
+        },
+            erase: function(){
+                //this.outputPot(decrease);
                 this.gettingWeekInfo();
                 this.refreshWeek++;
             },
@@ -1084,8 +1085,8 @@
 
                 }
                 return style
-            },
-            getPot: function(){
+            }
+            /*getPot: function(){
                 let url = new URL('http://127.0.0.1:3000/api/potWatch')
                 let params = {
                     id: this.user[0].usersId,
@@ -1115,8 +1116,8 @@
                         this.pot.actual = data.potWatch;
 
                     });
-            },
-            inputPot: function(increase){
+            },*/
+         /*   inputPot: function(increase){
                 fetch('http://127.0.0.1:3000/api/potWatch/', {
                     method: 'POST',
                     headers: {
@@ -1134,8 +1135,8 @@
                         console.error('Error:', error);
                     });
                 console.log(increase)
-            },
-            outputPot: function(decrease){
+            },*/
+           /* outputPot: function(decrease){
                 var old = 0;
                 var income = decrease.amount * -1;
                 if(this.pot.actual.length === 0 || this.pot.actual[0].potWatchNewPot === null){
@@ -1144,8 +1145,6 @@
                     old = this.pot.actual[0].potWatchNewPot;
                 }
                 var rest = {
-                    potWatchUserId: this.user[0].usersId,
-                    potWatchDate: decrease.date,
                     potWatchType: 'output',
                     potWatchAmount: income,
                     potWatchOldPot: old,
@@ -1168,8 +1167,8 @@
                         console.error('Error:', error);
                     });
 
-            },
-            editPot: function(inc){
+            },*/
+      /*      editPot: function(inc){
                 var dif = (inc) - (this.editOldPot);
                 var editType = "";
                 if(dif > 0){
@@ -1215,7 +1214,7 @@
 
 
 
-            }
+            }*/
 
         }
     }

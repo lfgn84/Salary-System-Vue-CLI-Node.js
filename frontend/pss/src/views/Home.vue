@@ -20,7 +20,10 @@ export default {
     }
   },
   created(){
-    this.email = this.$route.params.mail
+    this.email = this.$route.params.mail;
+    sessionStorage.removeItem('checkOutMail');
+    sessionStorage.removeItem('checkOutId');
+    sessionStorage.removeItem('checker');
   },
 }
 </script>

@@ -24,14 +24,60 @@
             </li>
             <li>
                 <router-link class="button is-medium"
-                             :to="{name:'salaryInfo', params:{user: this.user[0]}}" > User's salary information
+                             :to="{name:'salaryInfo', params:{user: this.user[0], adminCheck: this.checkOutMode}}" > User's salary information
                 </router-link>
                 <!--                <button class="button is-medium" @click="logOut">Log Out</button>-->
             </li>
+            <li>
+
+            <div v-show="!checkOutMode">
+                <div div v-bind:class="{ 'dropdown': !adminDrop , 'dropdown is-active': adminDrop }" class="" v-show="this.user[0].usersRange === 'admin' || this.user[0].usersRange === 'owner'">
+                    <div class="dropdown-trigger">
+                        <button class="button is-medium" aria-haspopup="true" aria-controls="dropdown-menu" @click="adDrop">
+                            <span>Admin Features</span>
+                            <span class="icon is-small">
+        <i class="fas fa-angle-down" aria-hidden="true"></i>
+      </span>
+                        </button>
+                    </div>
+                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                        <div class="dropdown-content">
+                            <a href="#" class="dropdown-item">
+                                Create a user
+                            </a>
+                            <a class="dropdown-item"  @click="checkUser = true">
+                                Checkout user
+                            </a>
+                            <!--<a href="#" class="dropdown-item">
+                                Other dropdown item
+                            </a>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <!--                <button class="button is-medium" @click="logOut">Log Out</button>-->
+            </li>
         </ul>
+
+            <div class="modal is-active" v-show="checkUser && (user[0].usersRange == 'owner' || user[0].usersRange == 'admin')">
+                <div class="modal-background"></div>
+                <div class="modal-content">
+                    <!-- Any other Bulma elements you want -->
+                    <ul class="menu-list" id="users">
+                        <li>
+                            <a class="is-active">Manage Your Team</a>
+                            <ul v-for="(index, item) in usersToCheck" v-bind:key="index">
+                                <user-list :userListed="usersToCheck[item]" :checker="user[0]"></user-list>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <button class="modal-close is-large" aria-label="close"  @click="checkUser = false"></button>
+            </div>
+
         </div>
         <div id="salary">
-        <salary :user="user" @update="updatePot"></salary>
+        <salary :user="user" :admin-mode="checkOutMode" @update="updatePot"></salary>
         </div>
     </div>
 </template>
@@ -39,12 +85,14 @@
 <script>
 
     import salary from "./salary";
+    import userList from "./userList";
 
 
     export default {
         name: "users",
         components: {
-            salary
+            salary,
+            userList
         },
         props: {
             email: String,
@@ -55,11 +103,13 @@
         data: function () {
             return {
                 user: [],
-
+                usersToCheck: [],
+                adminDrop: false,
                 pot:{
                     actual: [],
                     reg:[]
-                }
+                },
+                checkUser: false
 
             }
         },
@@ -85,6 +135,9 @@
                 });
 
         },
+        mounted() {
+        this.getUsersList();
+            },
         watch:{
             user: async function() {
                 this.updatePot()
@@ -122,8 +175,24 @@
                     this.pot.reg = data.potWatch;
                 });
 
-
-
+        },
+            getUsersList: function(){
+                let url = new URL('http://127.0.0.1:3000/api/users/list')
+                fetch(url)//+this.user[0].usersId)
+                    .then((response) => {
+                        return response.json();
+                    })
+                    .then((data) => {
+                        console.log(data.users);
+                        this.usersToCheck = data.users;
+                    });
+            },
+            adDrop: function(){
+            if(!this.adminDrop){
+                this.adminDrop = true;
+            }else if(this.adminDrop){
+                this.adminDrop = false;
+            }
         },
             logOut: function(){
                 sessionStorage.clear();
@@ -161,6 +230,10 @@
         grid-row: 3/5;
 
     }
+        #users{
+
+            background-color: white;
+        }
     p1{
         font-weight: bold;
     }

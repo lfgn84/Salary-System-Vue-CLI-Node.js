@@ -81,11 +81,11 @@
                 }).then(response => response.json())
                     .then(data => {
                         console.log('Success:', data);
-                        var decrease = {
+                     /*   var decrease = {
                             date: this.dayInfo.salaryDate,
                             amount : this.dayInfo.salaryIncome
-                        };
-                        this.$emit('remove', decrease);
+                        };*/
+                        this.$emit('remove');
 
                     })
                     .catch((error) => {
@@ -105,8 +105,8 @@
                   //  salaryIncome: this.dayInfo.salaryHour * this.dayInfo.salaryWorkedHours
 
                 };
-                let oldPotV = this.dayInfo.salaryIncome;
-                this.$emit('edit', data, oldPotV);
+             //  let oldPotV = this.dayInfo.salaryIncome;
+                this.$emit('edit', data );
 
             }
     }

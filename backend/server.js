@@ -218,7 +218,7 @@ app.post("/api/users/", (req, res, next) => {
             "id": this.lastID
         })
     });
-})
+});
 
 app.put("/api/users/:id", (req, res, next) => {
     var data = {
@@ -312,7 +312,7 @@ app.put("/api/users/:id", (req, res, next) => {
             "id": this.lastID
         })
     });
-})
+});
 
 app.delete("/api/users/:id", (req, res, next) => {
     usersdb.run(
@@ -382,7 +382,21 @@ app.get("/api/salary/pot",(req,res,next)=>{
             "message":"success",
             "salary": rows
         })
-    });
+    })
+});
+app.get("/api/salary/monthIncome",(req,res,next)=>{
+    var params = [req.query.startDay, req.query.endDay, req.query.uLocked, req.query.id];
+    var sql = "select sum(salaryIncome) as incomePot from salary where (salaryDate between ? and ? ) and salaryUserLocked = ? and salaryUserId = ? "
+    salarydb.all(sql,params,(err,rows)=>{
+        if(err){
+            res.status(400).jason({"err": err.message});
+            return;
+        }
+        res.json({
+            "message":"success",
+            "salary": rows
+        })
+    })
 });
 app.post("/api/salary", (req, res, next) => {
     var errors = []

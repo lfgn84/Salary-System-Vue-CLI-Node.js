@@ -43,26 +43,42 @@
 
 
 
+                           <!-- <li>
+                                <button class="button is-medium">Edit</button>
+                            </li>-->
+                            <li>
+                                <button class="button is-medium" v-show="!editing" @click="editAndLock">Edit and Lock Month</button>
+                                <button class="button is-medium is-warning" v-show="editing" @click="lockMonth">Lock month</button>
+                                <button class="button is-medium is-info" v-show="editing" @click="cancelEditLock">Cancel</button>
 
+                            </li>
                             <li>
                                 <router-link class="button is-medium"
                                              :to="{name:'LogIn'}"> Log Out
                                 </router-link>
                                 <!--                <button class="button is-medium" @click="logOut">Log Out</button>-->
                             </li>
-                            <li>
+
+                            <li v-if="!adminCheck">
                                 <router-link class="button is-medium"
                                              :to="{name:'Home'}"> Back
                                 </router-link>
                                 <!--                <button class="button is-medium" @click="logOut">Log Out</button>-->
                             </li>
-                            <li><button class="button is-medium" v-show="user.usersRange == 'owner' || user.usersRange == 'admin' ">Create a user</button></li>
-                            <li><button class="button is-medium" v-show="user.usersRange == 'owner' || user.usersRange == 'admin'" @click="checkUser = true">Checkout User</button></li>
-                        </ul>
-                        <div class="modal is-active" v-show="checkUser && (user.usersRange == 'owner' || user.usersRange == 'admin')">
+                            <li v-else-if="adminCheck">
+                                <router-link class="button is-medium"
+                                             :to="{name:'checkOutUser'}"> Back
+                                </router-link>
+                                <!--                <button class="button is-medium" @click="logOut">Log Out</button>-->
+                            </li>
+
+                            <!--<li><button class="button is-medium" v-show="user.usersRange == 'owner' || user.usersRange == 'admin' || adminMode ">Create a user</button></li>
+                            <li><button class="button is-medium" v-show="user.usersRange == 'owner' || user.usersRange == 'admin' || adminMode " @click="checkUser = true">Checkout User</button></li>
+-->                        </ul>
+                     <!--   <div class="modal is-active" v-show="checkUser && (user.usersRange == 'owner' || user.usersRange == 'admin')">
                             <div class="modal-background"></div>
                             <div class="modal-content">
-                                <!-- Any other Bulma elements you want -->
+                                &lt;!&ndash; Any other Bulma elements you want &ndash;&gt;
                                 <ul class="menu-list" id="users">
                                     <li>
                                         <a class="is-active">Manage Your Team</a>
@@ -73,7 +89,7 @@
                                 </ul>
                             </div>
                             <button class="modal-close is-large" aria-label="close"  @click="checkUser = false"></button>
-                        </div>
+                        </div>-->
                     </h2>
                 </div>
             </section>
@@ -85,7 +101,8 @@
                     <th><abbr title="user-info">User Info</abbr></th>
                     <th><abbr title="calculations">Calculations</abbr></th>
                     <th><abbr title="hours-worked">Hours Worked</abbr></th>
-                    <th><abbr title="left-in-pot">Left in pot this month</abbr></th>
+                    <th><abbr title="left-in-pot">Left in Pot this Month</abbr></th>
+                    <th><abbr title="preliminary-income-pot">Preliminary Income Pot</abbr></th>
 
                 </tr>
                 </thead>
@@ -124,7 +141,7 @@
                 <tr>
                     <td><strong> Salary / hour  </strong>
                     </td>
-                    <td>{{totalSalaryHour.toLocaleString('en-US')}} kr</td>
+                    <td>{{infoParams.totalSalaryHour.toLocaleString('en-US')}} kr</td>
                     <td v-if="month.workedHours[0].workedHours !== null">{{month.workedHours[0].workedHours}}</td>
                     <td v-else>0</td>
                     <td></td>
@@ -133,7 +150,8 @@
                 <tr>
                     <td><strong> Brutto Salary </strong>
                     </td>
-                    <td>{{user.usersBruttoSalary.toLocaleString('en-US')}} kr</td>
+                    <td v-if="!editing">{{infoParams.bruttoSalary.toLocaleString('en-US')}} kr</td>
+                    <td v-else-if="editing"> <input type="number" v-model.number="infoParams.bruttoSalary"> kr</td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -141,15 +159,15 @@
                 <tr>
                     <td><strong> Employeer Fee {{(user.usersEmployeerFee * 100).toLocaleString('en-US')}}% </strong>
                     </td>
-                    <td> {{employerFeeCalc.toLocaleString('en-US')}} kr</td>
+                    <td> {{infoParams.employerFeeCalc.toLocaleString('en-US')}} kr</td>
                     <td></td>
                     <td></td>
                     <td></td>
                 </tr>
                 <tr>
-                    <td><strong> Paid vacation </strong>
+                    <td><strong> Paid vacation {{user.usersPaidVacation * 100}} % </strong>
                     </td>
-                    <td>{{user.usersPaidVacation * 100}}% </td>
+                    <td>{{infoParams.vacation.toLocaleString('en-US')}} kr </td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -157,7 +175,8 @@
                 <tr>
                     <td><strong> Extra Pension:</strong>
                     </td>
-                    <td> {{user.usersExtraPension}}</td>
+                    <td v-if="!editing">{{infoParams.extraPension.toLocaleString('en-US')}} kr</td>
+                    <td v-else-if="editing"> <input type="number" v-model.number="infoParams.extraPension"> kr</td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -165,39 +184,40 @@
                 <tr>
                     <td><strong> Extra Insurance </strong>
                     </td>
-                    <td>{{user.usersInsurance}}</td>
-                    <td></td>
+                    <td v-if="!editing">{{infoParams.extraInsurance.toLocaleString('en-US')}} kr</td>
+                    <td v-else-if="editing"> <input type="number" v-model.number="infoParams.extraInsurance"> kr</td>                    <td></td>
                     <td></td>
                     <td></td>
                 </tr>
                 <tr>
                     <td><strong> Salary Tax </strong>
                     </td>
-                    <td>{{user.usersSalaryTax}}</td>
-                    <td></td>
+                    <td> {{infoParams.sTax.toLocaleString('en-US')}} kr</td>
+<!--                    <td v-else-if="editing"> <input type="number" v-model.number="infoParams.sTax"> kr</td>                      <td></td>-->
                     <td></td>
                     <td></td>
                 </tr>
                 <tr>
                     <td><strong> Competence Cost  </strong>
                     </td>
-                    <td>{{user.usersCompetenceCost}}</td>
-                    <td></td>
+                    <td v-if="!editing">{{infoParams.competence.toLocaleString('en-US')}} kr</td>
+                    <td v-else-if="editing"> <input  type="number" v-model.number="infoParams.competence"> kr</td>                      <td></td>
                     <td></td>
                     <td></td>
                 </tr>
                 <tr>
                     <td><strong> Health Add-On </strong>
                     </td>
-                    <td>{{user.usersHealthSupport}}</td>
-                    <td></td>
+                    <td v-if="!editing">{{infoParams.healthAdd.toLocaleString('en-US')}} kr</td>
+                    <td v-else-if="editing"> <input type="number" v-model.number="infoParams.healthAdd"> kr</td>                      <td></td>
                     <td></td>
                     <td></td>
                 </tr>
                 <tr>
                     <td><strong> Mobile Cost </strong>
                     </td>
-                    <td>{{user.usersMobile}}</td>
+                    <td v-if="!editing">{{infoParams.mobile.toLocaleString('en-US')}} kr</td>
+                    <td v-else-if="editing"> <input type="number" v-model.number="infoParams.mobile"> kr</td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -205,7 +225,8 @@
                 <tr>
                     <td><strong> Laptop Cost </strong>
                     </td>
-                    <td>{{user.usersLaptop}}</td>
+                    <td v-if="!editing">{{infoParams.laptop.toLocaleString('en-US')}} kr</td>
+                    <td v-else-if="editing"> <input type="number" v-model.number="infoParams.laptop"> kr</td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -213,27 +234,28 @@
                 <tr>
                     <td><strong> Hardware Cost </strong>
                     </td>
-                    <td>{{user.usersMiscHardware}}</td>
-                    <td></td>
+                    <td v-if="!editing">{{infoParams.hardware.toLocaleString('en-US')}} kr</td>
+                    <td v-else-if="editing"> <input type="number" v-model.number="infoParams.hardware"> kr</td>                      <td></td>
                     <td></td>
                     <td></td>
                 </tr>
                 <tr>
                     <td><strong> Misc Cost </strong>
                     </td>
-                    <td>{{user.usersMisc}}</td>
-                    <td></td>
+                    <td v-if="!editing">{{infoParams.misc.toLocaleString('en-US')}} kr</td>
+                    <td v-else-if="editing"> <input type="number" v-model.number="infoParams.misc"> kr</td>                      <td></td>
                     <td></td>
                     <td></td>
                 </tr>
                 <tr>
                     <td><strong> Total  </strong>
                     </td>
-                    <td>{{totalExpensCalc.toLocaleString('en-US')}} kr</td>
-                    <td>{{totalIncomeCalc.toLocaleString('en-US')}} kr</td>
+                    <td>{{infoParams.totalExpenseCalc.toLocaleString('en-US')}} kr</td>
+                    <td>{{infoParams.totalIncomeCalc.toLocaleString('en-US')}} kr</td>
                     <td v-if="pot.actual.length > 0">{{(pot.actual[0].potWatchNewPot).toLocaleString('en-US') }} kr</td>
                     <td v-else>0 </td>
-                    <td></td>
+                    <td v-if="pot.actual.length > 0">{{ (pot.actual[0].potWatchNewPot + infoParams.totalIncomeCalc ).toLocaleString('en-US')  }} kr</td>
+                    <td v-else> {{infoParams.totalIncomeCalc.toLocaleString('en-US')}} </td>
                 </tr>
 
 
@@ -293,13 +315,14 @@
 <script>
     // import{eachDayOfInterval, startOfMonth, endOfWeek, subWeeks, addWeeks, getISODay, getDate, getMonth, getYear /*,format*/} from 'date-fns'
     import{ startOfMonth, endOfMonth , subMonths /*,format*/} from 'date-fns'
-    import userList from "../components/userList";
+    //import userList from "../components/userList";
 
     export default {
         name: "salaryInfo",
-        components: {userList},
+        //components: {userList},
         props: {
-            user: [Object, Array]
+            user: [Object, Array],
+           adminCheck: Boolean
         },
         data(){
             return {
@@ -308,27 +331,49 @@
                 actual: [],
                 reg: []
             },
+            editing: false,
             today: new Date(),
-            employerFeeCalc: "",
-            totalExpenseCalc:"",
-            totalIncomeCalc:"",
-            totalSalaryHour:"",
+        infoParams:{
+            pctLevel: 0,
+            priceHour:0,
+            bruttoSalary: 0,
+            employerFee: 0,
+            vacation: 0,
+            extraPension: 0,
+            extraInsurance: 0,
+            sTax: 0,
+            competence: 0,
+            healthAdd: 0,
+            mobile: 0,
+            laptop: 0,
+            hardware: 0,
+            misc: 0,
+            employerFeeCalc: 0,
+            totalExpenseCalc:0,
+            totalIncomeCalc:0,
+            totalSalaryHour:0
+                },
+                mock:{},
             month:{
                 start: "",
                 end: "",
                 workedHours: ""
-            },
-            checkUser: false,
-            usersList: []
+            }
+           // checkUser: false
+           // usersList: []
             }
         },
         created(){
-            if(sessionStorage.user){this.user = JSON.parse(sessionStorage.user)}
+            if(sessionStorage.user){
+                this.user = JSON.parse(sessionStorage.user);
+            }
             else{
                 this.user = this.$route.params.user;
             }
+            this.adminCheck = this.$route.params.adminCheck;
             this.getStartEnd();
             this.getPot();
+
             this.getUsersList();
            /* var start = this.user.usersHiringDate;
             var end = new Date();*/
@@ -353,6 +398,9 @@
                     console.log(data.salary);
                     this.salary = data.salary;
                     this.workedHours();
+                   // this.getIncomePot();
+
+
 
                 });
 
@@ -364,13 +412,44 @@
             month:{
                 handler: function(val, oldVal){
                     console.log(val, oldVal);
-                  this.totalSalaryHour = this.user.usersPctLevel * this.user.usersPriceHour;
-                  this.employerFeeCalc = this.user.usersEmployeerFee * this.user.usersBruttoSalary;
-                  this. totalExpensCalc = this.employerFeeCalc + this.user.usersBruttoSalary;
-                  this.totalIncomeCalc = this.month.workedHours[0].workedHours * this.totalSalaryHour;
+                    this.infoParams.pctLevel = this.user.usersPctLevel;
+                    this.infoParams.priceHour = this.user.usersPriceHour;
+                    this.infoParams.employerFee = this.user.usersEmployeerFee;
+                    this.infoParams.bruttoSalary = this.user.usersBruttoSalary;
+                    this.infoParams.vacation = this.user.usersPaidVacation * this.infoParams.bruttoSalary;
+                    this.infoParams.extraPension = this.user.usersExtraPension;
+                    this.infoParams.extraInsurance = this.user.usersInsurance;
+                    this.infoParams.competence = this.user.usersCompetenceCost;
+                    this.infoParams.healthAdd = this.user.usersHealthSupport;
+                    this.infoParams.mobile = this.user.usersMobile;
+                    this.infoParams.laptop = this.user.usersLaptop;
+                    this.infoParams.hardware = this.user.usersMiscHardware;
+                    this.infoParams.misc = this.user.usersMisc;
+
+
+
+                  /*this.infoParams.sTax = (this.infoParams.extraPension + this.infoParams.extraInsurance) * 0.24;
+                  this.infoParams.totalSalaryHour = this.infoParams.pctLevel * this.infoParams.priceHour;
+                  this.infoParams.employerFeeCalc = this.infoParams.employerFee * this.infoParams.bruttoSalary;*/
+
+                  this.calcExpense();
+
+                  this.infoParams.totalIncomeCalc = this.month.workedHours[0].workedHours * this.infoParams.totalSalaryHour;
                 },
                 deep: true
 
+            },
+            editing: function(){
+                if(this.editing){
+                  this.calcExpense();
+                }
+            },
+            infoParams: {
+                handler: function(val, oldVal){
+                    console.log(val, oldVal);
+                    this.calcExpense();
+                },
+                deep:true
             }
 
         },
@@ -440,6 +519,14 @@
 
 
             },*/
+            lockMonth: function(){
+                if(confirm('Do you want to lock selected month ? ')){
+                this.calcExpense();
+                this.editing = false;
+                }else{
+                    this.cancelEditLock();
+                }
+            },
             getStartEnd:function(){
                 let oldStart = startOfMonth(new Date());
                 let oldEnd = endOfMonth(new Date());
@@ -491,6 +578,8 @@
                         console.log(data.salary);
                         this.salary = data.salary;
                         this.workedHours();
+                       // this.getIncomePot();
+
 
                     });
 
@@ -499,7 +588,8 @@
                 this.month.start = this.formatDate(subMonths(new Date(this.month.start), 1));
                 this.month.end = this.formatDate(subMonths(new Date(this.month.end), 1));
                 this.getMonth();
-                this.workedHours();
+               this.workedHours();
+              // this.getIncomePot();
 
 
             },
@@ -508,7 +598,8 @@
                 this.month.end = endOfMonth(new Date());*/
                this.getStartEnd();
                 this.getMonth();
-                this.workedHours()
+               this.workedHours();
+              // this.getIncomePot();
             },
             workedHours: function(){
                 var url = new URL('http://127.0.0.1:3000/api/salary/workedHours')
@@ -530,6 +621,18 @@
                         this.month.workedHours = data.salary;
 
                     });
+            },
+            calcExpense: function(){
+                this.infoParams.vacation = this.user.usersPaidVacation * this.infoParams.bruttoSalary;
+
+                this.infoParams.sTax = (this.infoParams.extraPension + this.infoParams.extraInsurance) * 0.24;
+                this.infoParams.totalSalaryHour = this.infoParams.pctLevel * this.infoParams.priceHour;
+                this.infoParams.employerFeeCalc = this.infoParams.employerFee * this.infoParams.bruttoSalary;
+
+                    this. infoParams.totalExpenseCalc = this.infoParams.employerFeeCalc + this.infoParams.bruttoSalary + this.infoParams.vacation +
+                    this.infoParams.extraPension + this.infoParams.extraInsurance + this.infoParams.competence +
+                    this.infoParams.healthAdd + this.infoParams.mobile + this.infoParams.laptop + this.infoParams.hardware + this.infoParams.misc;
+
             },
             getPot: function(){
                 let url = new URL('http://127.0.0.1:3000/api/potWatch')
@@ -562,7 +665,36 @@
 
                     });
             },
-            getUsersList: function(){
+            editAndLock: function(){
+              this.editing = true;
+              this.mock = JSON.parse(JSON.stringify(this.infoParams));
+            },
+            cancelEditLock: function(){
+                this.infoParams = JSON.parse(JSON.stringify(this.mock));
+                this.editing = false;
+                this.mock = {};
+            },
+          /*  getIncomePot: function(){
+                let url = new URL('http://127.0.0.1:3000/api/salary/monthIncome');
+                let params = {
+                    id: this.user.usersId,
+                    uLocked: 1,
+                    startDay: this.month.start,
+                    endDay: this.month.end,
+                };
+                url.search = new URLSearchParams(params).toString()
+                fetch(url)//+this.user[0].usersId)
+                    .then((response) => {
+                        return response.json();
+                    })
+                    .then((data) => {
+                        console.log(data.salary);
+                        this.incomePot = data.salary;
+
+                    });
+            },*/
+
+       /*     getUsersList: function(){
                 let url = new URL('http://127.0.0.1:3000/api/users/list')
                 fetch(url)//+this.user[0].usersId)
                     .then((response) => {
@@ -571,9 +703,8 @@
                     .then((data) => {
                         console.log(data.users);
                         this.usersList = data.users;
-
                     });
-            },
+            },*/
             formatDate:function (date) {
                 var d = new Date(date),
                     month = '' + (d.getMonth() + 1),
@@ -586,7 +717,7 @@
                     day = '0' + day;
 
                 return [year, month, day].join('-');
-            },
+            }
         }
     }
 </script>
@@ -598,6 +729,14 @@
 side{
     text-align: left;
 
+}
+input[type=number] {
+    -moz-appearance: textfield;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 .potPLus{
     border: solid thick lightblue;
