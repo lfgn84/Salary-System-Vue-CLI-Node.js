@@ -1,7 +1,7 @@
 <template>
     <div class="login">
 
-        <h2>PSS ACCESS</h2>
+        <h2>SALARY SYSTEM ACCESS</h2>
 
         <label class="first">Login with E-mail and password</label>
 

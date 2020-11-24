@@ -3,7 +3,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.0/css/bulma-rtl.css" integrity="sha256-8c3iUwMTRp4NGIoybGwbQUO27Luo4DwwC27e+2IXGzM=" crossorigin="anonymous" />
         <side>
             <div id="h">{{monthYear}}</div>
-            <button class="button is-normal  is-dark" @click="previous">Previous Month</button><div class="separator"></div><button class="button is-normal  is-dark" @click="actual">This Month</button>
+            <button class="button is-normal  is-dark" :disabled="editing" @click="previous">Previous Month</button><div class="separator"></div><button class="button is-normal  is-dark" :disabled="editing" @click="actual">This Month</button>
             <section class="section">
                 <div class="container">
                     <h1 class="title">{{user.usersName}} {{user.usersLastName}}</h1>
@@ -51,6 +51,10 @@
                                 <button class="button is-medium is-warning" v-show="editing" @click="lockMonth">Lock month</button>
                                 <button class="button is-medium is-info" v-show="editing" @click="cancelEditLock">Cancel</button>
 
+                            </li>
+                            <li>
+                                <button class="button is-medium
+                                 is-success" v-show="adminCheck || user.usersRange == 'admin' || user.usersRange == 'owner' ">Attest</button>
                             </li>
                             <li>
                                 <router-link class="button is-medium"
@@ -358,7 +362,8 @@
                 start: "",
                 end: "",
                 workedHours: ""
-            }
+            },
+                lockedMonths:[]
            // checkUser: false
            // usersList: []
             }
@@ -526,6 +531,7 @@
                 }else{
                     this.cancelEditLock();
                 }
+
             },
             getStartEnd:function(){
                 let oldStart = startOfMonth(new Date());
